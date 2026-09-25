@@ -1,0 +1,220 @@
+@import './variables.css';
+
+/* Universal Reset & Base Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  transition: font-size 0.2s ease;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Marathi & Hindi Font Rendering Override */
+:lang(mr), :lang(hi), .devanagari-text {
+  font-family: var(--font-devanagari);
+}
+
+/* Accessibility Skip Link */
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 20px;
+  background: var(--navy-deep);
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 9999;
+  transition: top 0.2s ease;
+  border: 2px solid var(--saffron-primary);
+}
+
+.skip-link:focus {
+  top: 15px;
+  outline: 3px solid var(--saffron-primary);
+}
+
+/* Layout Container */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.container-wide {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--saffron-primary);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background-color: var(--saffron-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25);
+}
+
+.btn-primary:hover {
+  background-color: var(--saffron-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+}
+
+.btn-navy {
+  background-color: var(--navy-deep);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+}
+
+.btn-navy:hover {
+  background-color: var(--navy-secondary);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--text-muted);
+}
+
+.btn-outline-saffron {
+  background-color: transparent;
+  border-color: var(--saffron-primary);
+  color: var(--saffron-primary);
+}
+
+.btn-outline-saffron:hover {
+  background-color: var(--saffron-light);
+}
+
+.btn-success {
+  background-color: var(--success-green);
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background-color: var(--success-dark);
+}
+
+.btn-sm {
+  padding: 6px 13px;
+  font-size: 0.82rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: 13px 26px;
+  font-size: 1.02rem;
+  border-radius: var(--radius-md);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.01em;
+}
+
+.badge-saffron {
+  background-color: var(--saffron-light);
+  color: var(--saffron-primary);
+  border: 1px solid var(--saffron-border);
+}
+
+.badge-navy {
+  background-color: var(--navy-subtle);
+  color: var(--navy-deep);
+  border: 1px solid var(--border-subtle);
+}
+
+.badge-success {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+  border: 1px solid var(--success-border);
+}
+
+/* Font Scaling Classes */
+html.font-small {
+  font-size: 13.5px !important;
+}
+
+html.font-normal {
+  font-size: 16px !important;
+}
+
+html.font-large {
+  font-size: 18.5px !important;
+}
+
+html.font-xlarge {
+  font-size: 21px !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}

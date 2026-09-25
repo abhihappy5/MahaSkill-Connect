@@ -1,0 +1,333 @@
+/* ==========================================================
+   MahaSkill Connect - Career Restart Dashboard Styles (Phase 3)
+   ========================================================== */
+
+.restart-wrapper {
+  background-color: var(--bg-secondary);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* Welcome Card */
+.restart-welcome-card {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  margin-top: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.restart-welcome-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #10b981 0%, #059669 50%, #ea580c 100%);
+}
+
+.restart-welcome-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--navy-deep);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.restart-welcome-sub {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 780px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* Profile Summary Box */
+.restart-profile-summary-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.restart-profile-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.restart-profile-lbl {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.restart-profile-val {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--navy-deep);
+}
+
+/* Career Restart Score Section */
+.restart-score-section {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.score-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.circular-score-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.score-radial-large {
+  width: 130px;
+  height: 130px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.score-radial-large svg {
+  transform: rotate(-90deg);
+}
+
+.score-center-text {
+  position: absolute;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--navy-deep);
+}
+
+.score-metrics-4grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.score-metric-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.metric-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Transferable Skills Section & Transition Map */
+.transferable-skills-section {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.transferable-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+  margin-bottom: 28px;
+}
+
+.transfer-skill-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  border-left: 4px solid var(--success-green);
+}
+
+/* Visual Career Transition Map Pipeline */
+.transition-map-pipeline {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-top: 24px;
+}
+
+.transition-map-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  position: relative;
+  margin-top: 16px;
+}
+
+.trans-step-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.trans-step-title {
+  font-size: 0.78rem;
+  color: var(--saffron-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.trans-step-content {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Personalized 5-Step Learning Path */
+.learning-path-section {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.path-steps-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.timeline-step-row {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  transition: all var(--transition-fast);
+}
+
+.timeline-step-row.completed {
+  border-left: 5px solid var(--success-green);
+  background: #f0fdf4;
+}
+
+.timeline-step-row.in-progress {
+  border-left: 5px solid var(--saffron-primary);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline-step-row.upcoming {
+  border-left: 5px solid var(--border-medium);
+  opacity: 0.85;
+}
+
+.step-number-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--navy-deep);
+  color: #ffffff;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.step-number-circle.done {
+  background: var(--success-green);
+}
+
+.step-number-circle.active {
+  background: var(--saffron-primary);
+}
+
+/* AI Career Coach Prominent Section */
+.ai-career-coach-section {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid var(--saffron-border);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-md);
+}
+
+.coach-chat-window {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  height: 320px;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .score-layout {
+    grid-template-columns: 1fr;
+  }
+  .transition-map-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .score-metrics-4grid {
+    grid-template-columns: 1fr;
+  }
+  .transition-map-steps {
+    grid-template-columns: 1fr;
+  }
+  .restart-welcome-title {
+    font-size: 1.75rem;
+  }
+}

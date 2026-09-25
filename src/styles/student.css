@@ -1,0 +1,318 @@
+/* ==========================================================
+   MahaSkill Connect - Student Portal Styles (SiteMap Module 2)
+   ========================================================== */
+
+.student-wrapper {
+  background: var(--bg-primary);
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* Student Top Navigation Bar */
+.student-subnav {
+  background: #ffffff;
+  border-bottom: 2px solid var(--border-subtle);
+  position: sticky;
+  top: 72px;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.student-subnav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 16px;
+}
+
+.student-subnav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.student-nav-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.student-nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 16px;
+  border: none;
+  background: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.student-nav-tab:hover {
+  color: var(--saffron-primary);
+  background: var(--navy-subtle);
+}
+
+.student-nav-tab.active {
+  color: var(--saffron-primary);
+  border-bottom-color: var(--saffron-primary);
+  background: var(--saffron-light);
+}
+
+/* Student Profile Banner */
+.student-hero-card {
+  background: linear-gradient(135deg, var(--navy-deep) 0%, #1e293b 100%);
+  color: #ffffff;
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  margin: 20px 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.student-hero-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(234, 88, 12, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.student-profile-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.student-avatar-box {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--saffron-primary);
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.4);
+  border: 3px solid #ffffff;
+}
+
+/* 4 Quick Stat Badges in Banner */
+.student-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.student-stat-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.student-stat-pill-lbl {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.student-stat-pill-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+/* Skill Assessment Quiz Box */
+.quiz-container-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.quiz-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.quiz-option-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--navy-deep);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quiz-option-btn:hover {
+  border-color: var(--saffron-primary);
+  background: var(--saffron-light);
+}
+
+.quiz-option-btn.selected {
+  border-color: var(--navy-deep);
+  background: var(--navy-subtle);
+}
+
+.quiz-option-btn.correct {
+  border-color: var(--success-dark);
+  background: #ecfdf5;
+  color: var(--success-dark);
+}
+
+.quiz-option-btn.wrong {
+  border-color: #dc2626;
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Skill Matrix Table/Grid */
+.skill-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.skill-matrix-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.skill-matrix-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--saffron-border);
+}
+
+/* Course Progress Card */
+.student-course-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.course-progress-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.course-progress-bar-fill {
+  height: 100%;
+  background: var(--saffron-primary);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* Learning Path Timeline */
+.timeline-stepper {
+  position: relative;
+  padding-left: 36px;
+}
+
+.timeline-stepper::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  bottom: 24px;
+  width: 3px;
+  background: var(--border-subtle);
+}
+
+.timeline-step-item {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -36px;
+  top: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.timeline-step-item.completed .timeline-dot {
+  border-color: var(--success-dark);
+  background: var(--success-dark);
+  color: #ffffff;
+}
+
+.timeline-step-item.in-progress .timeline-dot {
+  border-color: var(--saffron-primary);
+  background: var(--saffron-primary);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .student-quick-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .student-profile-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
