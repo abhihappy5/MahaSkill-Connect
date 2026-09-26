@@ -11,7 +11,8 @@ import {
   GraduationCap, 
   Award, 
   TrendingUp, 
-  Building2 
+  Building2,
+  ArrowRight
 } from 'lucide-react';
 import { allDistrictsList, districtTranslations } from '../data/districtsData';
 
@@ -56,7 +57,7 @@ export function Hero({
 
         recognition.onstart = () => {
           setIsListening(true);
-          setVoiceNotice(t.listening);
+          setVoiceNotice(t.listening || 'Listening to your voice query...');
         };
 
         recognition.onresult = (event) => {
@@ -90,7 +91,7 @@ export function Hero({
 
   const simulateVoiceInput = () => {
     setIsListening(true);
-    setVoiceNotice(t.listening);
+    setVoiceNotice(t.listening || 'Listening to your voice query...');
     setTimeout(() => {
       const sampleQueries = [
         "EV Powertrain Specialist Pune",
@@ -104,7 +105,7 @@ export function Hero({
       setVoiceNotice(`Recognized: "${randomQuery}"`);
       setTimeout(() => setVoiceNotice(''), 3000);
       onSearchSubmit(randomQuery);
-    }, 2000);
+    }, 1500);
   };
 
   const popularChips = [
@@ -116,62 +117,74 @@ export function Hero({
   ];
 
   return (
-    <section id="home" class="hero-section" aria-label="Hero Section">
-      <div class="container">
-        <div class="hero-content">
-          {/* AI Badge */}
-          <div class="hero-badge-wrap">
-            <span class="live-pulse" aria-hidden="true"></span>
-            <Sparkles size={16} style={{ color: 'var(--saffron-primary)' }} />
-            <span class="hero-badge-text">{t.heroBadge}</span>
+    <section id="home" className="hero-section" aria-label="Hero Section" style={{ padding: '36px 0 24px 0' }}>
+      <div className="container">
+        <div className="hero-content" style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          
+          {/* Top AI Badge */}
+          <div className="hero-badge-wrap" style={{ margin: '0 auto 12px auto' }}>
+            <span className="live-pulse" aria-hidden="true"></span>
+            <Sparkles size={14} style={{ color: 'var(--saffron-primary)' }} />
+            <span className="hero-badge-text" style={{ fontSize: '0.8rem' }}>{t.heroBadge}</span>
           </div>
 
           {/* Headline & Subheading */}
-          <h1 class="hero-title">
+          <h1 className="hero-title" style={{ fontSize: '2.4rem', lineHeight: 1.15, marginBottom: '10px' }}>
             {t.heroHeadline}
           </h1>
-          <p class="hero-subtitle">
+          <p className="hero-subtitle" style={{ fontSize: '1rem', color: 'var(--text-secondary)', maxWidth: '680px', margin: '0 auto 24px auto', lineHeight: 1.5 }}>
             {t.heroSubheading}
           </p>
 
-          {/* Search Box */}
+          {/* Unified Sleek Search Command Bar */}
           <form 
-            class="hero-search-container" 
+            className="hero-search-container" 
             onSubmit={(e) => {
               e.preventDefault();
               onSearchSubmit(searchQuery);
             }}
             role="search"
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              padding: '8px',
+              boxShadow: '0 10px 30px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(0,0,0,0.05)',
+              border: '1px solid #e2e8f0',
+              marginBottom: '16px'
+            }}
           >
-            <div class="search-inputs-row">
+            <div className="search-inputs-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              
               {/* District Selector */}
-              <div class="district-select-wrap">
-                <MapPin size={18} style={{ color: 'var(--saffron-primary)', flexShrink: 0 }} />
+              <div className="district-select-wrap" style={{ flex: '0 0 200px', display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', padding: '8px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <MapPin size={16} style={{ color: 'var(--saffron-primary)', flexShrink: 0 }} />
                 <select 
-                  class="district-select"
+                  className="district-select"
                   value={selectedDistrict}
                   onChange={(e) => setSelectedDistrict(e.target.value)}
                   aria-label="Select Maharashtra District"
+                  style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '0.84rem', fontWeight: 600, color: 'var(--navy-deep)' }}
                 >
-                  <option value="">{t.allDistricts}</option>
+                  <option value="">{t.allDistricts || 'All 36 Districts'}</option>
                   {allDistrictsList.map((district) => (
                     <option key={district} value={district}>
-                      {getDistrictName(district)} {lang === 'mr' ? 'जिल्हा' : (lang === 'hi' ? 'जिला' : 'District')}
+                      {getDistrictName(district)} {lang === 'mr' ? 'जिल्हा' : (lang === 'hi' ? 'जिला' : '')}
                     </option>
                   ))}
                 </select>
               </div>
 
               {/* Main Job/Skill Search Input */}
-              <div class="job-search-input-wrap">
-                <Search size={20} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+              <div className="job-search-input-wrap" style={{ flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px' }}>
+                <Search size={18} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
                 <input 
                   type="text"
-                  class="job-search-input"
-                  placeholder={t.searchPlaceholder}
+                  className="job-search-input"
+                  placeholder={t.searchPlaceholder || 'Search trade, skill, course or employer...'}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Search job or skill"
+                  style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.92rem' }}
                 />
               </div>
 
@@ -180,30 +193,32 @@ export function Hero({
                 type="button"
                 className={`voice-mic-btn ${isListening ? 'listening' : ''}`}
                 onClick={onOpenVoice || handleVoiceSearch}
-                title={t.voiceSearchTooltip}
+                title={t.voiceSearchTooltip || 'Voice search in Marathi, Hindi or English'}
                 aria-label="Voice search button"
+                style={{
+                  background: isListening ? '#fee2e2' : '#f1f5f9',
+                  color: isListening ? '#ef4444' : 'var(--navy-deep)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  width: '38px',
+                  height: '38px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
               >
                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
               </button>
-            </div>
 
-            {/* Action Buttons Row */}
-            <div class="hero-action-buttons">
+              {/* Primary Search CTA */}
               <button 
-                type="button" 
-                class="btn btn-primary btn-lg" 
-                onClick={onFindCareer}
+                type="submit" 
+                className="btn btn-primary" 
+                style={{ padding: '10px 20px', fontSize: '0.9rem', fontWeight: 700, borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                <Compass size={18} />
-                {t.findMyCareer}
-              </button>
-              <button 
-                type="button" 
-                class="btn btn-navy btn-lg" 
-                onClick={onAskAI}
-              >
-                <Bot size={18} style={{ color: 'var(--saffron-primary)' }} />
-                {t.askMahaSkillAI}
+                <span>Search</span>
+                <ArrowRight size={15} />
               </button>
             </div>
           </form>
@@ -211,26 +226,37 @@ export function Hero({
           {/* Voice Notification Feedback */}
           {voiceNotice && (
             <div style={{
-              fontSize: '0.85rem',
+              fontSize: '0.84rem',
               color: 'var(--saffron-primary)',
-              fontWeight: 600,
-              marginBottom: '10px'
+              fontWeight: 700,
+              marginBottom: '12px'
             }}>
-              {voiceNotice}
+              🎙️ {voiceNotice}
             </div>
           )}
 
-          {/* Popular Search Tags */}
-          <div class="search-tags-row">
-            <span>{t.popularSearches}</span>
+          {/* Popular Search Tags Strip */}
+          <div className="search-tags-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '28px' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700 }}>{t.popularSearches || 'Popular:'}</span>
             {popularChips.map((chip, idx) => (
               <button
                 key={idx}
                 type="button"
-                class="search-tag-chip"
+                className="search-tag-chip"
                 onClick={() => {
                   setSearchQuery(chip.query);
                   onSearchSubmit(chip.query);
+                }}
+                style={{
+                  background: '#f1f5f9',
+                  border: '1px solid #e2e8f0',
+                  color: 'var(--navy-deep)',
+                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 {chip.label}
@@ -238,48 +264,63 @@ export function Hero({
             ))}
           </div>
 
-          {/* Stats Ticker Strip */}
-          <div class="stats-ticker-strip" role="region" aria-label="Maharashtra Skill Statistics">
-            <div class="ticker-item">
-              <div class="ticker-icon-box">
-                <Briefcase size={20} />
+          {/* Sleek Glassmorphism Metric Strip */}
+          <div 
+            className="stats-ticker-strip" 
+            role="region" 
+            aria-label="Maharashtra Skill Statistics"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: '12px',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.95) 100%)',
+              border: '1px solid #e2e8f0',
+              borderRadius: '16px',
+              padding: '14px 18px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.03)'
+            }}
+          >
+            <div className="ticker-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div className="ticker-icon-box" style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Briefcase size={18} />
               </div>
-              <div class="ticker-info">
-                <span class="ticker-value">{t.statJobs}</span>
-                <span class="ticker-label">{t.statJobsSubtitle || 'Across 36 Districts'}</span>
-              </div>
-            </div>
-
-            <div class="ticker-item">
-              <div class="ticker-icon-box" style={{ background: '#ecfdf5', color: 'var(--success-green)' }}>
-                <GraduationCap size={20} />
-              </div>
-              <div class="ticker-info">
-                <span class="ticker-value">{t.statCourses}</span>
-                <span class="ticker-label">{t.statCoursesSubtitle || 'ITIs & Polytechnics'}</span>
-              </div>
-            </div>
-
-            <div class="ticker-item">
-              <div class="ticker-icon-box" style={{ background: '#eff6ff', color: '#2563eb' }}>
-                <Building2 size={20} />
-              </div>
-              <div class="ticker-info">
-                <span class="ticker-value">{t.statDistricts}</span>
-                <span class="ticker-label">{t.statDistrictsSubtitle || 'Statewide Coverage'}</span>
+              <div className="ticker-info" style={{ textAlign: 'left' }}>
+                <div className="ticker-value" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy-deep)', lineHeight: 1.1 }}>{t.statJobs}</div>
+                <div className="ticker-label" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t.statJobsSubtitle || '36 Districts'}</div>
               </div>
             </div>
 
-            <div class="ticker-item">
-              <div class="ticker-icon-box" style={{ background: '#fef3c7', color: 'var(--gov-gold)' }}>
-                <Award size={20} />
+            <div className="ticker-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div className="ticker-icon-box" style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <GraduationCap size={18} />
               </div>
-              <div class="ticker-info">
-                <span class="ticker-value">{t.statAvgSalary}</span>
-                <span class="ticker-label">{t.statAvgSalarySubtitle || 'Certified Graduates'}</span>
+              <div className="ticker-info" style={{ textAlign: 'left' }}>
+                <div className="ticker-value" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy-deep)', lineHeight: 1.1 }}>{t.statCourses}</div>
+                <div className="ticker-label" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t.statCoursesSubtitle || 'ITIs & Polytechnics'}</div>
+              </div>
+            </div>
+
+            <div className="ticker-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div className="ticker-icon-box" style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#eff6ff', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Building2 size={18} />
+              </div>
+              <div className="ticker-info" style={{ textAlign: 'left' }}>
+                <div className="ticker-value" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy-deep)', lineHeight: 1.1 }}>{t.statDistricts}</div>
+                <div className="ticker-info" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t.statDistrictsSubtitle || '6 Divisions'}</div>
+              </div>
+            </div>
+
+            <div className="ticker-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div className="ticker-icon-box" style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Award size={18} />
+              </div>
+              <div className="ticker-info" style={{ textAlign: 'left' }}>
+                <div className="ticker-value" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy-deep)', lineHeight: 1.1 }}>{t.statAvgSalary}</div>
+                <div className="ticker-label" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t.statAvgSalarySubtitle || 'Certified Average'}</div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>

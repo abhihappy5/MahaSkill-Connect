@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   User, 
@@ -9,63 +9,233 @@ import {
   Phone, 
   Mail, 
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  RotateCcw,
+  MapPin,
+  Sparkles,
+  KeyRound
 } from 'lucide-react';
 
-export function AuthModal({ isOpen, mode, onClose, onLoginSuccess, t }) {
-  const [activeTab, setActiveTab] = useState('candidate'); // 'candidate' | 'employer' | 'partner' | 'admin'
-  const [authMode, setAuthMode] = useState(mode || 'login'); // 'login' | 'register'
+const MAHARASHTRA_DISTRICTS = [
+  'Ahmednagar', 'Akola', 'Amravati', 'Beed', 'Bhandara', 'Buldhana',
+  'Chandrapur', 'Chhatrapati Sambhajinagar', 'Dhule', 'Gadchiroli', 'Gondia', 'Hingoli',
+  'Jalgaon', 'Jalna', 'Kolhapur', 'Latur', 'Mumbai City', 'Mumbai Suburban',
+  'Nagpur', 'Nanded', 'Nandurbar', 'Nashik', 'Dharashiv (Osmanabad)', 'Palghar',
+  'Parbhani', 'Pune', 'Raigad', 'Ratnagiri', 'Sangli', 'Satara',
+  'Sindhudurg', 'Solapur', 'Thane', 'Wardha', 'Washim', 'Yavatmal'
+];
+
+export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t = {} }) {
+  const [activeTab, setActiveTab] = useState('candidate'); // 'candidate' | 'student' | 'restart' | 'employer' | 'admin'
+  const [authMode, setAuthMode] = useState(mode); // 'login' | 'register'
+  
+  // Login Form States
+  const [loginMethod, setLoginMethod] = useState('password'); // 'password' | 'otp'
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [otp, setOtp] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+
+  // Register Form States
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regDistrict, setRegDistrict] = useState('Pune');
+  const [regPassword, setRegPassword] = useState('');
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(true);
+
+  // Status & Feedback States
+  const [errorMessage, setErrorMessage] = useState('');
   const [successNotice, setSuccessNotice] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Sync mode when modal opens or mode prop changes
+  useEffect(() => {
+    if (isOpen) {
+      setAuthMode(mode || 'login');
+      setErrorMessage('');
+      setSuccessNotice('');
+      setIsLoading(false);
+      setOtpSent(false);
+    }
+  }, [isOpen, mode]);
 
   if (!isOpen) return null;
 
-  const handleAuthSubmit = (e) => {
-    e.preventDefault();
-    setSuccessNotice(`Authenticated successfully as ${activeTab.toUpperCase()}! Welcome to MahaSkill Connect.`);
-    setTimeout(() => {
-      setSuccessNotice('');
-      onClose();
-      if (onLoginSuccess) onLoginSuccess(activeTab);
-    }, 1500);
-  };
-
   const roles = [
-    { key: 'candidate', label: 'Candidate / Student', icon: User },
-    { key: 'employer', label: 'Employer / MSME', icon: Building2 },
-    { key: 'partner', label: 'Training / ITI', icon: GraduationCap },
-    { key: 'admin', label: 'Govt / MSSDS Admin', icon: ShieldCheck }
+    { key: 'candidate', label: 'Job Seeker', icon: User, badge: 'Job Match' },
+    { key: 'student', label: 'Student', icon: GraduationCap, badge: 'ITI / Skills' },
+    { key: 'restart', label: 'Career Restart', icon: RotateCcw, badge: 'Women & Reskill' },
+    { key: 'employer', label: 'Employer / MSME', icon: Building2, badge: 'Hire Talent' },
+    { key: 'admin', label: 'Govt Admin', icon: ShieldCheck, badge: 'DVET Cockpit' }
   ];
 
+  const handleSendOtp = () => {
+    if (!identifier.trim()) {
+      setErrorMessage('Please enter your Mobile Number or Aadhaar ID first.');
+      return;
+    }
+    setErrorMessage('');
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setOtpSent(true);
+      setOtpCode('4285'); // Pre-fill mock OTP for smooth testing
+    }, 600);
+  };
+
+  const handleQuickDemoLogin = (roleKey) => {
+    setActiveTab(roleKey);
+    setErrorMessage('');
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setSuccessNotice(`Welcome! Verified as ${roleKey.toUpperCase()}. Entering portal...`);
+      setTimeout(() => {
+        setSuccessNotice('');
+        onClose();
+        if (onLoginSuccess) onLoginSuccess(roleKey);
+      }, 900);
+    }, 400);
+  };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    if (!identifier.trim()) {
+      setErrorMessage('Please enter your Email, Mobile, or Official ID.');
+      return;
+    }
+
+    if (loginMethod === 'password' && !password) {
+      setErrorMessage('Please enter your password.');
+      return;
+    }
+
+    if (loginMethod === 'otp' && (!otpSent || !otpCode)) {
+      setErrorMessage('Please generate and enter the 4-digit verification OTP.');
+      return;
+    }
+
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setSuccessNotice(`Successfully logged in as ${activeTab.toUpperCase()}! Redirecting...`);
+      setTimeout(() => {
+        setSuccessNotice('');
+        onClose();
+        if (onLoginSuccess) onLoginSuccess(activeTab);
+      }, 900);
+    }, 500);
+  };
+
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    if (!regName.trim()) {
+      setErrorMessage('Please enter your full name.');
+      return;
+    }
+    if (!regEmail.trim() || !regEmail.includes('@')) {
+      setErrorMessage('Please provide a valid email address.');
+      return;
+    }
+    if (regPassword.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.');
+      return;
+    }
+    if (regPassword !== regConfirmPassword) {
+      setErrorMessage('Passwords do not match. Please verify.');
+      return;
+    }
+    if (!termsAccepted) {
+      setErrorMessage('Please accept the Terms of Service and Data Consent.');
+      return;
+    }
+
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setSuccessNotice(`Account created successfully for ${regName}! Redirecting to your dashboard...`);
+      setTimeout(() => {
+        setSuccessNotice('');
+        onClose();
+        if (onLoginSuccess) onLoginSuccess(activeTab);
+      }, 1000);
+    }, 600);
+  };
+
   return (
-    <div class="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div class="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
-        {/* Header */}
-        <div class="modal-header">
-          <div>
-            <span class="badge badge-saffron" style={{ marginBottom: '4px' }}>
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px', borderRadius: '16px', overflow: 'hidden', padding: 0 }}>
+        
+        {/* Top Header */}
+        <div style={{
+          background: 'linear-gradient(135deg, #0b192c 0%, #1e3e62 100%)',
+          color: '#ffffff',
+          padding: '20px 24px',
+          position: 'relative'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{
+              background: 'rgba(255, 107, 0, 0.25)',
+              border: '1px solid #ff6b00',
+              color: '#ff9e58',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              padding: '3px 10px',
+              borderRadius: '20px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
               Government of Maharashtra
             </span>
-            <h3 class="modal-title">
-              {authMode === 'login' ? 'MahaSkill Portal Login' : 'Register on MahaSkill Connect'}
-            </h3>
+            <button 
+              onClick={onClose} 
+              aria-label="Close modal"
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: 'none',
+                color: '#ffffff',
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+            >
+              <X size={16} />
+            </button>
           </div>
-          <button class="modal-close-btn" onClick={onClose} aria-label="Close modal">
-            <X size={20} />
-          </button>
+
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 4px 0', color: '#ffffff' }}>
+            {authMode === 'login' ? 'MahaSkill Portal Login' : 'Register on MahaSkill Connect'}
+          </h3>
+          <p style={{ margin: 0, fontSize: '0.82rem', color: '#94a3b8' }}>
+            {authMode === 'login' 
+              ? 'Access candidate matching, training admissions & labour intelligence' 
+              : 'Create your free account with DigiLocker-integrated credentials'}
+          </p>
         </div>
 
-        {/* Role Tabs */}
+        {/* Persona Selector Tabs */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '4px',
-          background: 'var(--bg-secondary)',
-          padding: '6px',
-          borderBottom: '1px solid var(--border-subtle)'
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: '2px',
+          background: '#0f172a',
+          padding: '4px',
+          borderBottom: '1px solid #334155'
         }}>
           {roles.map((r) => {
             const Icon = r.icon;
@@ -74,112 +244,602 @@ export function AuthModal({ isOpen, mode, onClose, onLoginSuccess, t }) {
               <button
                 key={r.key}
                 type="button"
-                onClick={() => setActiveTab(r.key)}
+                onClick={() => { setActiveTab(r.key); setErrorMessage(''); }}
                 style={{
                   border: 'none',
-                  background: isSelected ? '#ffffff' : 'transparent',
-                  color: isSelected ? 'var(--navy-deep)' : 'var(--text-muted)',
-                  padding: '8px 4px',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: '0.75rem',
+                  background: isSelected ? '#1e293b' : 'transparent',
+                  color: isSelected ? '#38bdf8' : '#94a3b8',
+                  padding: '8px 2px',
+                  borderRadius: '6px',
+                  fontSize: '0.7rem',
                   fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: '4px',
-                  boxShadow: isSelected ? 'var(--shadow-xs)' : 'none',
-                  borderBottom: isSelected ? '2px solid var(--saffron-primary)' : '2px solid transparent'
+                  borderBottom: isSelected ? '2px solid #38bdf8' : '2px solid transparent',
+                  transition: 'all 0.15s ease'
                 }}
               >
-                <Icon size={16} style={{ color: isSelected ? 'var(--saffron-primary)' : 'inherit' }} />
-                <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{r.label.split('/')[0]}</span>
+                <Icon size={15} style={{ color: isSelected ? '#38bdf8' : '#64748b' }} />
+                <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{r.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Form Body */}
-        <div class="modal-body">
+        {/* Modal Body */}
+        <div style={{ padding: '20px 24px', maxHeight: '75vh', overflowY: 'auto' }}>
+          
+          {/* Success Banner */}
           {successNotice ? (
             <div style={{
               textAlign: 'center',
-              padding: '24px',
+              padding: '24px 16px',
               background: '#ecfdf5',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid #a7f3d0'
+              borderRadius: '12px',
+              border: '1px solid #a7f3d0',
+              animation: 'fadeIn 0.3s ease'
             }}>
-              <CheckCircle2 size={36} style={{ color: 'var(--success-green)', margin: '0 auto 12px auto' }} />
-              <div style={{ fontWeight: 800, color: 'var(--success-dark)', fontSize: '1.1rem' }}>
+              <CheckCircle2 size={40} style={{ color: '#059669', margin: '0 auto 10px auto' }} />
+              <div style={{ fontWeight: 800, color: '#065f46', fontSize: '1.05rem', marginBottom: '4px' }}>
                 {successNotice}
               </div>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#047857' }}>
+                Please wait while we redirect your workspace...
+              </p>
             </div>
           ) : (
-            <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy-deep)', marginBottom: '6px' }}>
-                  {activeTab === 'candidate' ? 'Mobile Number or Aadhaar / MahaDBT ID' : (activeTab === 'employer' ? 'Company CIN / GSTIN / Email' : (activeTab === 'partner' ? 'ITI / Institute Code or Email' : 'Government Officer Email / Employee ID'))}
-                </label>
-                <input 
-                  type="text"
-                  required
-                  placeholder={activeTab === 'candidate' ? 'e.g. 9876543210' : 'e.g. admin@mahaskill.gov.in'}
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '11px 14px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--border-subtle)',
-                    fontSize: '0.92rem',
-                    outline: 'none'
-                  }}
-                />
+            <>
+              {/* Error Message Alert */}
+              {errorMessage && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 14px',
+                  background: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  borderRadius: '8px',
+                  color: '#b91c1c',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  marginBottom: '16px'
+                }}>
+                  <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              {/* Quick One-Click Demo Mode Helper */}
+              <div style={{
+                background: '#f8fafc',
+                border: '1px dashed #cbd5e1',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: '#475569', fontWeight: 600 }}>
+                  <Sparkles size={14} style={{ color: '#eab308' }} />
+                  <span>Quick Test Login:</span>
+                </div>
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                  {roles.map((r) => (
+                    <button
+                      key={r.key}
+                      type="button"
+                      onClick={() => handleQuickDemoLogin(r.key)}
+                      style={{
+                        background: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        color: '#0f172a',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {r.label.split('/')[0]}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy-deep)', marginBottom: '6px' }}>
-                  {isOtpSent ? 'Enter 6-Digit OTP' : 'Password / Pin'}
-                </label>
-                <input 
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '11px 14px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--border-subtle)',
-                    fontSize: '0.92rem',
-                    outline: 'none'
-                  }}
-                />
-              </div>
+              {/* ================= LOGIN MODE ================= */}
+              {authMode === 'login' ? (
+                <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  
+                  {/* Method toggle: Password vs OTP */}
+                  <div style={{
+                    display: 'flex',
+                    background: '#f1f5f9',
+                    padding: '3px',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => { setLoginMethod('password'); setErrorMessage(''); }}
+                      style={{
+                        flex: 1,
+                        padding: '6px',
+                        border: 'none',
+                        background: loginMethod === 'password' ? '#ffffff' : 'transparent',
+                        color: loginMethod === 'password' ? '#0f172a' : '#64748b',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        boxShadow: loginMethod === 'password' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                      }}
+                    >
+                      Password Login
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setLoginMethod('otp'); setErrorMessage(''); }}
+                      style={{
+                        flex: 1,
+                        padding: '6px',
+                        border: 'none',
+                        background: loginMethod === 'otp' ? '#ffffff' : 'transparent',
+                        color: loginMethod === 'otp' ? '#0f172a' : '#64748b',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        boxShadow: loginMethod === 'otp' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                      }}
+                    >
+                      Mobile / Aadhaar OTP
+                    </button>
+                  </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: 'var(--text-secondary)' }}>
-                  <input type="checkbox" defaultChecked /> Remember login on this device
-                </label>
-                <a href="#forgot" onClick={(e) => { e.preventDefault(); alert("OTP reset link dispatched to your registered Aadhaar/mobile."); }} style={{ color: 'var(--saffron-primary)', textDecoration: 'none', fontWeight: 600 }}>
-                  Forgot?
-                </a>
-              </div>
+                  {/* Identifier Input */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#1e293b', marginBottom: '5px' }}>
+                      {activeTab === 'candidate' ? 'Mobile No. / Aadhaar / MahaDBT ID' :
+                       activeTab === 'student' ? 'Student PRN / Mobile / Email' :
+                       activeTab === 'restart' ? 'Registered Mobile / Email' :
+                       activeTab === 'employer' ? 'Company CIN / GSTIN / Work Email' :
+                       'Officer Email / Government Employee ID'}
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input 
+                        type="text"
+                        required
+                        placeholder={activeTab === 'candidate' ? '9876543210 or Aadhaar' : activeTab === 'admin' ? 'officer@mahaskill.gov.in' : 'user@example.com or mobile'}
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px 10px 36px',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          fontSize: '0.9rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                    </div>
+                  </div>
 
-              <button type="submit" class="btn btn-primary" style={{ width: '100%', padding: '12px' }}>
-                {authMode === 'login' ? `Login as ${activeTab.toUpperCase()}` : 'Create Free Account'}
-                <ArrowRight size={16} />
-              </button>
+                  {/* Password Login Fields */}
+                  {loginMethod === 'password' ? (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                        <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1e293b' }}>
+                          Password / PIN
+                        </label>
+                        <a 
+                          href="#forgot" 
+                          onClick={(e) => { 
+                            e.preventDefault(); 
+                            alert("A password reset link & OTP has been dispatched to your registered credentials."); 
+                          }} 
+                          style={{ color: '#d97706', textDecoration: 'none', fontWeight: 700, fontSize: '0.78rem' }}
+                        >
+                          Forgot Password?
+                        </a>
+                      </div>
+                      <div style={{ position: 'relative' }}>
+                        <input 
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '10px 36px 10px 36px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.9rem',
+                            outline: 'none',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                        <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            color: '#94a3b8',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* OTP Login Fields */
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#1e293b', marginBottom: '5px' }}>
+                        Verification Code (OTP)
+                      </label>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <input 
+                          type="text"
+                          maxLength={6}
+                          placeholder="4-digit OTP"
+                          value={otpCode}
+                          onChange={(e) => setOtpCode(e.target.value)}
+                          disabled={!otpSent}
+                          style={{
+                            flex: 1,
+                            padding: '10px 12px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.95rem',
+                            letterSpacing: '2px',
+                            fontWeight: 700,
+                            textAlign: 'center',
+                            background: otpSent ? '#ffffff' : '#f1f5f9',
+                            outline: 'none'
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          disabled={isLoading}
+                          style={{
+                            background: otpSent ? '#f1f5f9' : '#e0f2fe',
+                            color: otpSent ? '#475569' : '#0369a1',
+                            border: '1px solid #bae6fd',
+                            borderRadius: '8px',
+                            padding: '0 14px',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {otpSent ? 'Resend OTP' : 'Send OTP'}
+                        </button>
+                      </div>
+                      {otpSent && (
+                        <span style={{ fontSize: '0.74rem', color: '#059669', display: 'block', marginTop: '4px' }}>
+                          ✓ OTP sent! Auto-filled demo OTP <strong>4285</strong>.
+                        </span>
+                      )}
+                    </div>
+                  )}
 
-              <div style={{ textAlign: 'center', fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
-                {authMode === 'login' ? (
-                  <span>Don't have an account? <button type="button" onClick={() => setAuthMode('register')} style={{ border: 'none', background: 'none', color: 'var(--saffron-primary)', fontWeight: 700, cursor: 'pointer' }}>Register now</button></span>
-                ) : (
-                  <span>Already registered? <button type="button" onClick={() => setAuthMode('login')} style={{ border: 'none', background: 'none', color: 'var(--saffron-primary)', fontWeight: 700, cursor: 'pointer' }}>Login here</button></span>
-                )}
-              </div>
-            </form>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: '#475569' }}>
+                      <input type="checkbox" defaultChecked /> Remember login on this device
+                    </label>
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    disabled={isLoading}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      background: 'linear-gradient(135deg, #ff6b00 0%, #ea580c 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: 800,
+                      fontSize: '0.95rem',
+                      cursor: isLoading ? 'wait' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      boxShadow: '0 4px 12px rgba(255, 107, 0, 0.25)'
+                    }}
+                  >
+                    <span>{isLoading ? 'Verifying Credentials...' : `Sign in as ${roles.find(r => r.key === activeTab)?.label}`}</span>
+                    <ArrowRight size={16} />
+                  </button>
+
+                  <div style={{ textAlign: 'center', fontSize: '0.84rem', color: '#64748b', marginTop: '4px' }}>
+                    Don't have an account?{' '}
+                    <button 
+                      type="button" 
+                      onClick={() => { setAuthMode('register'); setErrorMessage(''); }}
+                      style={{ border: 'none', background: 'none', color: '#d97706', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      Register now
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                
+                /* ================= REGISTER MODE ================= */
+                <form onSubmit={handleRegisterSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  
+                  {/* Full Name */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                      Full Name (as per Aadhaar / Official ID) *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input 
+                        type="text"
+                        required
+                        placeholder="e.g. Ramesh Sakharam Patil"
+                        value={regName}
+                        onChange={(e) => setRegName(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '9px 12px 9px 34px',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          fontSize: '0.88rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <User size={15} style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                    </div>
+                  </div>
+
+                  {/* Email & Phone in 2 columns */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                        Email Address *
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <input 
+                          type="email"
+                          required
+                          placeholder="name@email.com"
+                          value={regEmail}
+                          onChange={(e) => setRegEmail(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '9px 10px 9px 32px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.85rem',
+                            outline: 'none',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                        <Mail size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                        Mobile Number *
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <input 
+                          type="tel"
+                          required
+                          maxLength={10}
+                          placeholder="9876543210"
+                          value={regPhone}
+                          onChange={(e) => setRegPhone(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '9px 10px 9px 32px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.85rem',
+                            outline: 'none',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                        <Phone size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* District & Persona Role */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                        Maharashtra District *
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <select
+                          value={regDistrict}
+                          onChange={(e) => setRegDistrict(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '9px 10px 9px 32px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.85rem',
+                            outline: 'none',
+                            background: '#ffffff',
+                            boxSizing: 'border-box'
+                          }}
+                        >
+                          {MAHARASHTRA_DISTRICTS.map((d) => (
+                            <option key={d} value={d}>{d}</option>
+                          ))}
+                        </select>
+                        <MapPin size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                        Registering As *
+                      </label>
+                      <select
+                        value={activeTab}
+                        onChange={(e) => setActiveTab(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '9px 10px',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          fontSize: '0.85rem',
+                          outline: 'none',
+                          background: '#ffffff',
+                          boxSizing: 'border-box',
+                          fontWeight: 600
+                        }}
+                      >
+                        <option value="candidate">Job Seeker / Trainee</option>
+                        <option value="student">Student / Youth</option>
+                        <option value="restart">Career Restart (Women/Reskill)</option>
+                        <option value="employer">Employer / MSME</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Password & Confirm Password */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                        Create Password *
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <input 
+                          type={showRegPassword ? 'text' : 'password'}
+                          required
+                          placeholder="Min 6 chars"
+                          value={regPassword}
+                          onChange={(e) => setRegPassword(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '9px 30px 9px 30px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.85rem',
+                            outline: 'none',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                        <Lock size={13} style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                        <button
+                          type="button"
+                          onClick={() => setShowRegPassword(!showRegPassword)}
+                          style={{
+                            position: 'absolute',
+                            right: '8px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            color: '#94a3b8',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {showRegPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                        Confirm Password *
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <input 
+                          type={showRegPassword ? 'text' : 'password'}
+                          required
+                          placeholder="Repeat password"
+                          value={regConfirmPassword}
+                          onChange={(e) => setRegConfirmPassword(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '9px 10px 9px 30px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.85rem',
+                            outline: 'none',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                        <KeyRound size={13} style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* DigiLocker & Consent Checkbox */}
+                  <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: '2px' }}>
+                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={termsAccepted} 
+                        onChange={(e) => setTermsAccepted(e.target.checked)} 
+                        style={{ marginTop: '2px' }}
+                      />
+                      <span>
+                        I consent to share verified credentials for statewide skill matchmaking under the <strong>Government of Maharashtra DVET & MSSDS</strong> digital initiatives.
+                      </span>
+                    </label>
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    disabled={isLoading}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      background: 'linear-gradient(135deg, #ff6b00 0%, #ea580c 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: 800,
+                      fontSize: '0.95rem',
+                      cursor: isLoading ? 'wait' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      marginTop: '4px',
+                      boxShadow: '0 4px 12px rgba(255, 107, 0, 0.25)'
+                    }}
+                  >
+                    <span>{isLoading ? 'Creating Your Profile...' : 'Complete Free Registration'}</span>
+                    <ArrowRight size={16} />
+                  </button>
+
+                  <div style={{ textAlign: 'center', fontSize: '0.84rem', color: '#64748b' }}>
+                    Already have an account?{' '}
+                    <button 
+                      type="button" 
+                      onClick={() => { setAuthMode('login'); setErrorMessage(''); }}
+                      style={{ border: 'none', background: 'none', color: '#d97706', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      Login here
+                    </button>
+                  </div>
+                </form>
+              )}
+            </>
           )}
         </div>
       </div>

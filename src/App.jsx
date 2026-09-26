@@ -89,10 +89,14 @@ export default function App() {
   const handleLoginSuccess = (role) => {
     if (role === 'student') {
       setCurrentView('student');
-    } else if (role === 'candidate') {
+    } else if (role === 'candidate' || role === 'jobseeker') {
       setCurrentView('dashboard');
-    } else if (role === 'admin') {
+    } else if (role === 'restart') {
+      setCurrentView('restart');
+    } else if (role === 'admin' || role === 'employer' || role === 'partner') {
       setCurrentView('admin');
+    } else {
+      setCurrentView('dashboard');
     }
   };
 
@@ -204,6 +208,53 @@ export default function App() {
                 onOpenCareerRestartDashboard={() => setCurrentView('restart')}
                 onOpenAdminDashboard={() => setCurrentView('admin')}
               />
+
+              {/* Homepage Quick Section Navigation Pills */}
+              <div style={{
+                position: 'sticky',
+                top: '64px',
+                zIndex: 900,
+                background: 'rgba(255, 255, 255, 0.92)',
+                backdropFilter: 'blur(8px)',
+                borderBottom: '1px solid #e2e8f0',
+                padding: '8px 0',
+                marginBottom: '12px'
+              }}>
+                <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none', padding: '0 12px' }}>
+                  {[
+                    { id: 'skill-demand-map', label: t.skillDemand || 'Demand Map' },
+                    { id: 'trending-careers', label: t.trendingCareers || 'Trending Careers' },
+                    { id: 'emerging-skills', label: t.emergingSkills || 'Emerging Sectors' },
+                    { id: 'how-it-works', label: t.howItWorks || 'How It Works' },
+                    { id: 'success-stories', label: t.successStories || 'Success Stories' }
+                  ].map((sec) => (
+                    <button
+                      key={sec.id}
+                      type="button"
+                      onClick={() => {
+                        const el = document.getElementById(sec.id);
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        color: 'var(--navy-deep)',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--navy-deep)'; e.currentTarget.style.color = '#ffffff'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = 'var(--navy-deep)'; }}
+                    >
+                      {sec.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* Homepage Section 1: Maharashtra Skill Demand */}
               <SkillDemandMap 
