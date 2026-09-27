@@ -29,6 +29,16 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [externalFilter, setExternalFilter] = useState('');
 
+  // Active Authenticated User state
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mahaskill_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   // Modals state
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
@@ -89,14 +99,29 @@ export default function App() {
     }
   };
 
-  const handleLoginSuccess = (role) => {
+  const handleLoginSuccess = (role, user) => {
+    if (user) {
+      setCurrentUser(user);
+      localStorage.setItem('mahaskill_user', JSON.stringify(user));
+    }
     if (role === 'student') {
       setCurrentView('student');
-    } else if (role === 'candidate') {
+    } else if (role === 'candidate' || role === 'jobseeker') {
       setCurrentView('dashboard');
-    } else if (role === 'admin') {
+    } else if (role === 'restart') {
+      setCurrentView('restart');
+    } else if (role === 'admin' || role === 'employer' || role === 'partner') {
       setCurrentView('admin');
+    } else {
+      setCurrentView('dashboard');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('mahaskill_user');
+    setCurrentUser(null);
+    setCurrentView('home');
+    if (setPublicSubView) setPublicSubView('home');
   };
 
   return (
@@ -108,6 +133,8 @@ export default function App() {
           lang={lang}
           setLang={setLang}
           t={t}
+          currentUser={currentUser}
+          onLogout={handleLogout}
           onOpenAuth={handleOpenAuth}
           onOpenAssistant={() => handleOpenAiModal('', currentView === 'student' ? 'student' : (currentView === 'dashboard' ? 'seeker' : 'student'))}
           activeSection={activeSection}

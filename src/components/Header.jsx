@@ -8,19 +8,21 @@ import {
   GraduationCap, 
   TrendingUp, 
   Bot,
-  RotateCcw,
   ShieldCheck,
   BookOpen,
   MapPin,
   ChevronDown,
   Layers,
-  Sparkles
+  Sparkles,
+  LogOut
 } from 'lucide-react';
 
 export function Header({ 
   lang, 
   setLang, 
   t, 
+  currentUser,
+  onLogout,
   onOpenAuth, 
   onOpenAssistant,
   activeSection,
@@ -91,14 +93,28 @@ export function Header({
     <>
       {/* 1. Official Government Top Strip */}
       <div className="gov-top-bar" role="region" aria-label="Official Government Banner">
-        <div className="container gov-top-bar-inner">
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+          
+          {/* Left: Official Gov Seal & Title */}
+          <div className="gov-brand-left" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="gov-emblem-mini" aria-hidden="true" style={{ width: '22px', height: '22px' }}>
+              <img 
+                src="/maharashtra_seal.svg" 
+                alt="Government of Maharashtra Official Seal" 
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
+            </div>
+            <span style={{ fontSize: '0.78rem', color: '#f8fafc' }}>
+              <strong>{t.govTitle || 'Government of Maharashtra'}</strong> | {t.deptTitle || 'Skill & Employment Mission'}
+            </span>
+          </div>
 
-          {/* Live Market Stats + Accessibility + Language Selector */}
-          <div className="gov-top-right">
-
+          {/* Right: Live Market Stats + Accessibility + Language Selector */}
+          <div className="gov-top-right" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            
             {/* Live Stats Pill */}
-            <div className="gov-live-stats-pill">
-              <span className="gov-live-dot"></span>
+            <div style={{ display: 'none', md: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.74rem', color: '#86efac', fontWeight: 700 }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }}></span>
               <span>1,42,850+ Live Vacancies</span>
             </div>
 
@@ -197,8 +213,7 @@ export function Header({
                 {t.home}
               </button>
 
-              {/* Careers (now also carries the former Courses/Emerging Skills content - see
-                  TrendingCareers.jsx which merges Emerging Skills in) */}
+              {/* Careers */}
               <button 
                 type="button"
                 className={`nav-link ${currentView === 'home' && publicSubView === 'careers' ? 'active' : ''}`}
@@ -325,25 +340,118 @@ export function Header({
                   </div>
                 )}
               </div>
+
+              {/* AI Assistant Pill */}
+              <button 
+                type="button"
+                className="nav-link" 
+                style={{ 
+                  background: 'rgba(255, 107, 0, 0.08)', 
+                  border: '1px solid rgba(255, 107, 0, 0.3)', 
+                  borderRadius: '20px',
+                  padding: '5px 12px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+                onClick={onOpenAssistant}
+              >
+                <Bot size={14} style={{ color: 'var(--saffron-primary)' }} />
+                <span style={{ color: 'var(--saffron-primary)', fontWeight: 800, fontSize: '0.82rem' }}>{t.aiAssistant}</span>
+              </button>
             </nav>
 
-            {/* Header Actions (Login / Register) */}
+            {/* Header Actions (User Profile if logged in, otherwise Login / Register) */}
             <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button 
-                className="btn btn-outline btn-sm" 
-                onClick={() => onOpenAuth('login')}
-                style={{ padding: '6px 14px', fontSize: '0.84rem', fontWeight: 700 }}
-              >
-                <User size={14} />
-                {t.login}
-              </button>
-              <button 
-                className="btn btn-primary btn-sm" 
-                onClick={() => onOpenAuth('register')}
-                style={{ padding: '6px 14px', fontSize: '0.84rem', fontWeight: 700 }}
-              >
-                {t.register}
-              </button>
+              {currentUser ? (
+                /* Authenticated User Profile Pill */
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div 
+                    onClick={() => {
+                      if (currentUser.role === 'student') setCurrentView('student');
+                      else if (currentUser.role === 'candidate' || currentUser.role === 'jobseeker') setCurrentView('dashboard');
+                      else if (currentUser.role === 'restart') setCurrentView('restart');
+                      else if (currentUser.role === 'admin' || currentUser.role === 'employer') setCurrentView('admin');
+                    }}
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px', 
+                      background: '#f8fafc', 
+                      padding: '4px 10px', 
+                      borderRadius: '24px', 
+                      border: '1px solid #cbd5e1',
+                      cursor: 'pointer'
+                    }}
+                    title="Click to view dashboard"
+                  >
+                    <div style={{ 
+                      width: '28px', 
+                      height: '28px', 
+                      borderRadius: '50%', 
+                      background: 'var(--navy-deep)', 
+                      color: '#ffffff', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontWeight: 800, 
+                      fontSize: '0.78rem' 
+                    }}>
+                      {currentUser.avatar || currentUser.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--navy-deep)', lineHeight: 1.1 }}>
+                        {currentUser.name}
+                      </span>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--saffron-primary)', fontWeight: 700 }}>
+                        {currentUser.roleLabel || currentUser.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    title="Logout"
+                    style={{
+                      background: '#fef2f2',
+                      color: '#dc2626',
+                      border: '1px solid #fecaca',
+                      borderRadius: '20px',
+                      padding: '5px 10px',
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <LogOut size={13} />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              ) : (
+                /* Guest User Actions */
+                <>
+                  <button 
+                    className="btn btn-outline btn-sm" 
+                    onClick={() => onOpenAuth('login')}
+                    style={{ padding: '6px 14px', fontSize: '0.84rem', fontWeight: 700 }}
+                  >
+                    <User size={14} />
+                    {t.login}
+                  </button>
+                  <button 
+                    className="btn btn-primary btn-sm" 
+                    onClick={() => onOpenAuth('register')}
+                    style={{ padding: '6px 14px', fontSize: '0.84rem', fontWeight: 700 }}
+                  >
+                    {t.register}
+                  </button>
+                </>
+              )}
               
               {/* Mobile Menu Trigger */}
               <button 
@@ -368,6 +476,22 @@ export function Header({
             flexDirection: 'column',
             gap: '10px'
           }}>
+            {currentUser && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#f8fafc', borderRadius: '8px', marginBottom: '6px' }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--navy-deep)' }}>{currentUser.name}</div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--saffron-primary)', fontWeight: 700 }}>{currentUser.roleLabel || currentUser.role}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { onLogout(); setMobileMenuOpen(false); }}
+                  style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+
             <button 
               type="button" 
               className="btn btn-outline" 

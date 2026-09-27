@@ -16,8 +16,76 @@ import {
   RotateCcw,
   MapPin,
   Sparkles,
-  KeyRound
+  KeyRound,
+  Check,
+  Copy
 } from 'lucide-react';
+
+export const DUMMY_USERS = {
+  candidate: {
+    name: "Rahul Patil",
+    email: "rahul.patil@jobseeker.in",
+    phone: "9876543210",
+    role: "candidate",
+    roleLabel: "Job Seeker",
+    district: "Pune",
+    password: "password123",
+    avatar: "RP",
+    digilockerVerified: true,
+    qualification: "Diploma in Mechanical Engg (MSBTE)",
+    matchingJobs: 14
+  },
+  student: {
+    name: "Rohit Shinde",
+    email: "rohit.shinde@student.gov.in",
+    phone: "9822012345",
+    role: "student",
+    roleLabel: "Student",
+    district: "Kolhapur",
+    password: "password123",
+    avatar: "RS",
+    digilockerVerified: true,
+    targetTrade: "EV Powertrain & Battery Diagnostics",
+    enrolledCourses: 2
+  },
+  restart: {
+    name: "Priya Deshmukh",
+    email: "priya.deshmukh@restart.in",
+    phone: "9823098765",
+    role: "restart",
+    roleLabel: "Career Restart",
+    district: "Nagpur",
+    password: "password123",
+    avatar: "PD",
+    digilockerVerified: true,
+    careerBreak: "3 Years",
+    targetDomain: "Data Analytics & Quality Management"
+  },
+  employer: {
+    name: "Tata Motors MSME Supply Hub",
+    email: "contact@tata-auto.com",
+    phone: "9819001122",
+    role: "employer",
+    roleLabel: "Employer / MSME",
+    district: "Pune",
+    password: "password123",
+    avatar: "TM",
+    digilockerVerified: true,
+    activeVacancies: 38
+  },
+  admin: {
+    name: "Dr. Vijay Patil, IAS",
+    email: "admin@mahaskill.gov.in",
+    phone: "9820011223",
+    role: "admin",
+    roleLabel: "Govt Admin",
+    district: "Mumbai",
+    password: "password123",
+    avatar: "VP",
+    digilockerVerified: true,
+    department: "DVET / State Skill Mission"
+  }
+};
 
 const MAHARASHTRA_DISTRICTS = [
   'Ahmednagar', 'Akola', 'Amravati', 'Beed', 'Bhandara', 'Buldhana',
@@ -54,6 +122,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
   const [errorMessage, setErrorMessage] = useState('');
   const [successNotice, setSuccessNotice] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [copiedRole, setCopiedRole] = useState(null);
 
   // Sync mode when modal opens or mode prop changes
   useEffect(() => {
@@ -63,6 +132,10 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
       setSuccessNotice('');
       setIsLoading(false);
       setOtpSent(false);
+      // Auto-fill default dummy user for current tab
+      const dummy = DUMMY_USERS[activeTab] || DUMMY_USERS.candidate;
+      setIdentifier(dummy.email);
+      setPassword(dummy.password);
     }
   }, [isOpen, mode]);
 
@@ -71,9 +144,31 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
   const roles = [
     { key: 'candidate', label: 'Job Seeker', icon: User, badge: 'Job Match' },
     { key: 'student', label: 'Student', icon: GraduationCap, badge: 'ITI / Skills' },
+    { key: 'restart', label: 'Career Restart', icon: RotateCcw, badge: 'Women & Reskill' },
     { key: 'employer', label: 'Employer / MSME', icon: Building2, badge: 'Hire Talent' },
     { key: 'admin', label: 'Govt Admin', icon: ShieldCheck, badge: 'DVET Cockpit' }
   ];
+
+  const handleTabChange = (roleKey) => {
+    setActiveTab(roleKey);
+    setErrorMessage('');
+    const dummy = DUMMY_USERS[roleKey];
+    if (dummy && authMode === 'login') {
+      setIdentifier(dummy.email);
+      setPassword(dummy.password);
+    }
+  };
+
+  const handleAutoFillDummy = (roleKey) => {
+    setActiveTab(roleKey);
+    const dummy = DUMMY_USERS[roleKey];
+    if (dummy) {
+      setIdentifier(dummy.email);
+      setPassword(dummy.password);
+      setCopiedRole(roleKey);
+      setTimeout(() => setCopiedRole(null), 2000);
+    }
+  };
 
   const handleSendOtp = () => {
     if (!identifier.trim()) {
@@ -86,21 +181,32 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
       setIsLoading(false);
       setOtpSent(true);
       setOtpCode('4285'); // Pre-fill mock OTP for smooth testing
-    }, 600);
+    }, 400);
   };
 
   const handleQuickDemoLogin = (roleKey) => {
     setActiveTab(roleKey);
     setErrorMessage('');
     setIsLoading(true);
+    const dummyUser = DUMMY_USERS[roleKey] || {
+      name: `${roleKey.toUpperCase()} User`,
+      email: `${roleKey}@mahaskill.gov.in`,
+      role: roleKey,
+      roleLabel: roleKey.charAt(0).toUpperCase() + roleKey.slice(1),
+      district: 'Pune',
+      avatar: roleKey.slice(0, 2).toUpperCase(),
+      digilockerVerified: true
+    };
+
     setTimeout(() => {
       setIsLoading(false);
-      setSuccessNotice(`Welcome! Verified as ${roleKey.toUpperCase()}. Entering portal...`);
+      setSuccessNotice(`Authenticated as ${dummyUser.name} (${dummyUser.roleLabel}). Launching portal...`);
+      localStorage.setItem('mahaskill_user', JSON.stringify(dummyUser));
       setTimeout(() => {
         setSuccessNotice('');
         onClose();
-        if (onLoginSuccess) onLoginSuccess(roleKey);
-      }, 900);
+        if (onLoginSuccess) onLoginSuccess(roleKey, dummyUser);
+      }, 700);
     }, 400);
   };
 
@@ -124,14 +230,30 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
     }
 
     setIsLoading(true);
+    const matchedDummy = Object.values(DUMMY_USERS).find(u => 
+      u.email.toLowerCase() === identifier.trim().toLowerCase() || 
+      u.phone === identifier.trim()
+    );
+
+    const loggedInUser = matchedDummy || {
+      name: identifier.includes('@') ? identifier.split('@')[0].replace('.', ' ').toUpperCase() : `User (${identifier})`,
+      email: identifier,
+      role: activeTab,
+      roleLabel: roles.find(r => r.key === activeTab)?.label || activeTab,
+      district: 'Pune',
+      avatar: identifier.slice(0, 2).toUpperCase(),
+      digilockerVerified: true
+    };
+
     setTimeout(() => {
       setIsLoading(false);
-      setSuccessNotice(`Successfully logged in as ${activeTab.toUpperCase()}! Redirecting...`);
+      setSuccessNotice(`Welcome back, ${loggedInUser.name}! Logging in as ${loggedInUser.roleLabel}...`);
+      localStorage.setItem('mahaskill_user', JSON.stringify(loggedInUser));
       setTimeout(() => {
         setSuccessNotice('');
         onClose();
-        if (onLoginSuccess) onLoginSuccess(activeTab);
-      }, 900);
+        if (onLoginSuccess) onLoginSuccess(loggedInUser.role, loggedInUser);
+      }, 700);
     }, 500);
   };
 
@@ -161,14 +283,27 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
     }
 
     setIsLoading(true);
+    const newUser = {
+      name: regName.trim(),
+      email: regEmail.trim(),
+      phone: regPhone.trim() || '9876543210',
+      role: activeTab,
+      roleLabel: roles.find(r => r.key === activeTab)?.label || activeTab,
+      district: regDistrict,
+      avatar: regName.trim().split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+      digilockerVerified: true,
+      registeredAt: new Date().toISOString()
+    };
+
     setTimeout(() => {
       setIsLoading(false);
-      setSuccessNotice(`Account created successfully for ${regName}! Redirecting to your dashboard...`);
+      setSuccessNotice(`Account created successfully for ${newUser.name}! Redirecting to ${newUser.roleLabel} Portal...`);
+      localStorage.setItem('mahaskill_user', JSON.stringify(newUser));
       setTimeout(() => {
         setSuccessNotice('');
         onClose();
-        if (onLoginSuccess) onLoginSuccess(activeTab);
-      }, 1000);
+        if (onLoginSuccess) onLoginSuccess(newUser.role, newUser);
+      }, 800);
     }, 600);
   };
 
@@ -180,7 +315,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
         <div style={{
           background: 'linear-gradient(135deg, #0b192c 0%, #1e3e62 100%)',
           color: '#ffffff',
-          padding: '20px 24px',
+          padding: '18px 24px',
           position: 'relative'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -223,7 +358,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
           <p style={{ margin: 0, fontSize: '0.82rem', color: '#94a3b8' }}>
             {authMode === 'login' 
               ? 'Access candidate matching, training admissions & labour intelligence' 
-              : 'Create your free account with DigiLocker-integrated credentials'}
+              : 'Create your verified account with DigiLocker-linked credentials'}
           </p>
         </div>
 
@@ -243,7 +378,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
               <button
                 key={r.key}
                 type="button"
-                onClick={() => { setActiveTab(r.key); setErrorMessage(''); }}
+                onClick={() => handleTabChange(r.key)}
                 style={{
                   border: 'none',
                   background: isSelected ? '#1e293b' : 'transparent',
@@ -269,7 +404,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
         </div>
 
         {/* Modal Body */}
-        <div style={{ padding: '20px 24px', maxHeight: '75vh', overflowY: 'auto' }}>
+        <div style={{ padding: '18px 24px', maxHeight: '75vh', overflowY: 'auto' }}>
           
           {/* Success Banner */}
           {successNotice ? (
@@ -286,7 +421,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                 {successNotice}
               </div>
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#047857' }}>
-                Please wait while we redirect your workspace...
+                Redirecting you to your authenticated workspace...
               </p>
             </div>
           ) : (
@@ -304,48 +439,57 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                   color: '#b91c1c',
                   fontSize: '0.84rem',
                   fontWeight: 600,
-                  marginBottom: '16px'
+                  marginBottom: '14px'
                 }}>
                   <AlertCircle size={16} style={{ flexShrink: 0 }} />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
-              {/* Quick One-Click Demo Mode Helper */}
+              {/* 1-Click Quick Walkthrough Test Credentials Bar */}
               <div style={{
                 background: '#f8fafc',
-                border: '1px dashed #cbd5e1',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                marginBottom: '16px',
+                border: '1px solid #cbd5e1',
+                borderRadius: '10px',
+                padding: '10px 12px',
+                marginBottom: '14px',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '8px'
+                flexDirection: 'column',
+                gap: '6px'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: '#475569', fontWeight: 600 }}>
-                  <Sparkles size={14} style={{ color: '#eab308' }} />
-                  <span>Quick Test Login:</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Sparkles size={14} style={{ color: '#eab308' }} />
+                    Walkthrough Test Accounts (1-Click Fill):
+                  </span>
+                  {copiedRole && (
+                    <span style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 700 }}>
+                      ✓ Auto-filled {DUMMY_USERS[copiedRole]?.name}!
+                    </span>
+                  )}
                 </div>
+                
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                   {roles.map((r) => (
                     <button
                       key={r.key}
                       type="button"
-                      onClick={() => handleQuickDemoLogin(r.key)}
+                      onClick={() => handleAutoFillDummy(r.key)}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #e2e8f0',
-                        color: '#0f172a',
-                        fontSize: '0.7rem',
+                        background: activeTab === r.key ? '#e0f2fe' : '#ffffff',
+                        border: activeTab === r.key ? '1px solid #38bdf8' : '1px solid #e2e8f0',
+                        color: activeTab === r.key ? '#0369a1' : '#1e293b',
+                        fontSize: '0.72rem',
                         fontWeight: 700,
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
                       }}
                     >
-                      {r.label.split('/')[0]}
+                      <span>{r.label.split('/')[0]}</span>
                     </button>
                   ))}
                 </div>
@@ -401,7 +545,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                   {/* Identifier Input */}
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#1e293b', marginBottom: '5px' }}>
-                      {activeTab === 'candidate' ? 'Mobile No. / Aadhaar / MahaDBT ID' :
+                      {activeTab === 'candidate' ? 'Mobile No. / Aadhaar / Email' :
                        activeTab === 'student' ? 'Student PRN / Mobile / Email' :
                        activeTab === 'restart' ? 'Registered Mobile / Email' :
                        activeTab === 'employer' ? 'Company CIN / GSTIN / Work Email' :
@@ -411,7 +555,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                       <input 
                         type="text"
                         required
-                        placeholder={activeTab === 'candidate' ? '9876543210 or Aadhaar' : activeTab === 'admin' ? 'officer@mahaskill.gov.in' : 'user@example.com or mobile'}
+                        placeholder={DUMMY_USERS[activeTab]?.email || 'user@mahaskill.gov.in'}
                         value={identifier}
                         onChange={(e) => setIdentifier(e.target.value)}
                         style={{
@@ -433,7 +577,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
                         <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1e293b' }}>
-                          Password / PIN
+                          Password / PIN (Default: <code>password123</code>)
                         </label>
                         <a 
                           href="#forgot" 
@@ -443,7 +587,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                           }} 
                           style={{ color: '#d97706', textDecoration: 'none', fontWeight: 700, fontSize: '0.78rem' }}
                         >
-                          Forgot Password?
+                          Forgot?
                         </a>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -711,6 +855,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                       >
                         <option value="candidate">Job Seeker / Trainee</option>
                         <option value="student">Student / Youth</option>
+                        <option value="restart">Career Restart (Women/Reskill)</option>
                         <option value="employer">Employer / MSME</option>
                       </select>
                     </div>
@@ -795,7 +940,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                         style={{ marginTop: '2px' }}
                       />
                       <span>
-                        I consent to share verified credentials for statewide skill matchmaking under the <strong>Government of Maharashtra DVET & MSSDS</strong> digital initiatives.
+                        I consent to share verified credentials under the <strong>Government of Maharashtra DVET & MSSDS</strong> digital initiatives.
                       </span>
                     </label>
                   </div>

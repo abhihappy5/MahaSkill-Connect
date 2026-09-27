@@ -6,7 +6,7 @@ import {
   User, 
   Download, 
   Filter, 
-  ArrowLeft,
+  LogOut,
   ShieldCheck,
   Calendar,
   FileSpreadsheet,
@@ -70,8 +70,8 @@ export function AdminHeader({
   return (
     <div className="admin-header-sticky-wrapper">
       {/* Top Header Bar */}
-      <header className="admin-top-header" role="banner" aria-label="Government Admin Header">
-        {/* Left Side: Sidebar Toggle & Brand */}
+      <header className="admin-top-header" role="banner" aria-label="Government Admin Header" style={{ padding: '10px 20px' }}>
+        {/* Left Side: Sidebar Toggle, Logout Button & Clean Title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {onToggleSidebar && (
             <button 
@@ -86,7 +86,7 @@ export function AdminHeader({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '6px 12px',
+                padding: '6px 10px',
                 background: !isSidebarOpen ? 'var(--saffron-light)' : 'transparent',
                 borderColor: !isSidebarOpen ? 'var(--saffron-border)' : 'var(--border-medium)',
                 color: !isSidebarOpen ? 'var(--saffron-primary)' : 'var(--navy-deep)',
@@ -94,31 +94,40 @@ export function AdminHeader({
               }}
             >
               {isSidebarOpen ? <PanelLeftClose size={15} /> : <PanelLeftOpen size={15} style={{ color: 'var(--saffron-primary)' }} />}
-              <span style={{ fontSize: '0.78rem' }}>
+              <span style={{ fontSize: '0.76rem' }}>
                 {isSidebarOpen 
                   ? (lang === 'mr' ? 'फुल स्क्रीन' : (lang === 'hi' ? 'फुल स्क्रीन' : 'Full Screen')) 
-                  : (lang === 'mr' ? 'साइडबार उघडा' : (lang === 'hi' ? 'साइडबार खोलें' : 'Show Sidebar'))}
+                  : (lang === 'mr' ? 'साइडबार' : (lang === 'hi' ? 'साइडबार' : 'Sidebar'))}
               </span>
             </button>
           )}
 
+          {/* Logout Button */}
           <button 
             type="button" 
             className="btn btn-outline btn-sm"
             onClick={onBackToHome}
-            title={lang === 'mr' ? 'सार्वजनिक पोर्टलवर परत जा' : (lang === 'hi' ? 'सार्वजनिक पोर्टल पर वापस जाएं' : 'Return to Public Portal')}
-            style={{ padding: '6px 12px' }}
+            title={lang === 'mr' ? 'पोर्टलमधून लॉगआउट करा' : (lang === 'hi' ? 'पोर्टल से लॉगआउट करें' : 'Logout of Admin Portal')}
+            style={{ 
+              padding: '6px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#dc2626',
+              borderColor: '#fca5a5',
+              background: '#fef2f2',
+              fontWeight: 700,
+              fontSize: '0.8rem'
+            }}
           >
-            <ArrowLeft size={14} />
-            <span>{t?.adminPublicPortalBtn || (lang === 'mr' ? 'सार्वजनिक पोर्टल' : (lang === 'hi' ? 'सार्वजनिक पोर्टल' : 'Public Portal'))}</span>
+            <LogOut size={14} />
+            <span>{lang === 'mr' ? 'लॉगआउट' : (lang === 'hi' ? 'लॉगआउट' : 'Logout')}</span>
           </button>
 
+          {/* Clean Simplified Title */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="badge badge-navy" style={{ background: '#0f172a', color: '#ffffff', fontWeight: 800 }}>
-              {t?.adminGovtechBadge || (lang === 'mr' ? 'शासकीय प्रशासक' : (lang === 'hi' ? 'शासकीय व्यवस्थापक' : 'GOVTECH ADMIN'))}
-            </span>
-            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--navy-deep)' }}>
-              {t?.adminCockpitTitle || (lang === 'mr' ? 'महास्किल श्रम बुद्धिमत्ता कॉकपिट' : (lang === 'hi' ? 'महास्किल श्रम खुफिया कॉकपिट' : 'MahaSkill Labour Intelligence Cockpit'))}
+            <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--navy-deep)', letterSpacing: '-0.01em' }}>
+              {lang === 'mr' ? 'प्रशासकीय कॉकपिट' : (lang === 'hi' ? 'प्रशासनिक कॉकपिट' : 'Admin Cockpit')}
             </span>
           </div>
         </div>

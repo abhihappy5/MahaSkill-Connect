@@ -2,46 +2,64 @@ import React from 'react';
 import { 
   LayoutDashboard, 
   TrendingUp, 
-  MapPin, 
-  Building2, 
   Activity, 
   BookOpen, 
   Layers, 
-  Users, 
-  Wrench, 
+  Users,
   CheckCircle2, 
   MessageSquare, 
   Sparkles, 
-  FileText, 
-  ShieldAlert,
   Bot,
   PanelLeftClose
 } from 'lucide-react';
 
 export function AdminSidebar({ activeNav, setActiveNav, lang, setLang, t, isSidebarOpen = true, onToggleSidebar }) {
+  // Only functional, fully implemented admin modules are listed (no placeholder / "coming soon" buttons)
   const navItems = [
-    { key: 'overview', label: t?.adminNavOverview || (lang === 'mr' ? 'विहंगावलोकन' : (lang === 'hi' ? 'अवलोकन' : 'Overview')), icon: LayoutDashboard },
-    { key: 'skill-demand', label: t?.adminNavSkillDemand || (lang === 'mr' ? 'कौशल्य मागणी नकाशा' : (lang === 'hi' ? 'कौशल मांग मानचित्र' : 'Skill Demand Map')), icon: TrendingUp },
-    { key: 'district-intelligence', label: t?.adminNavDistrictIntel || (lang === 'mr' ? 'जिल्हा बुद्धिमत्ता' : (lang === 'hi' ? 'जिला खुफिया' : 'District Intelligence')), icon: MapPin },
-    { key: 'industry-demand', label: t?.adminNavIndustryDemand || (lang === 'mr' ? 'औद्योगिक मागणी' : (lang === 'hi' ? 'उद्योग मांग' : 'Industry Demand')), icon: Building2 },
-    { key: 'course-health', label: t?.adminNavCourseHealth || (lang === 'mr' ? 'अभ्यासक्रम आरोग्य मॉनिटर' : (lang === 'hi' ? 'पाठ्यक्रम स्वास्थ्य मॉनिटर' : 'Course Health Monitor')), icon: Activity },
-    { key: 'curriculum-alignment', label: t?.adminNavCurriculum || (lang === 'mr' ? 'अभ्यासक्रम संरेखन' : (lang === 'hi' ? 'पाठ्यक्रम संरेखण' : 'Curriculum Alignment')), icon: BookOpen },
-    { key: 'training-capacity', label: t?.adminNavTrainingCapacity || (lang === 'mr' ? 'प्रशिक्षण क्षमता' : (lang === 'hi' ? 'प्रशिक्षण क्षमता' : 'Training Capacity')), icon: Layers },
-    { key: 'trainer-readiness', label: t?.adminNavTrainerReadiness || (lang === 'mr' ? 'प्रशिक्षक सज्जता' : (lang === 'hi' ? 'प्रशिक्षक तत्परता' : 'Trainer Readiness')), icon: Users },
-    { key: 'equipment-readiness', label: t?.adminNavEquipmentReadiness || (lang === 'mr' ? 'उपकरण सज्जता' : (lang === 'hi' ? 'उपकरण तत्परता' : 'Equipment Readiness')), icon: Wrench },
-    { key: 'placement-analytics', label: t?.adminNavPlacementAnalytics || (lang === 'mr' ? 'प्लेसमेंट विश्लेषण' : (lang === 'hi' ? 'प्लेसमेंट एनालिटिक्स' : 'Placement Analytics')), icon: CheckCircle2 },
-    { key: 'employer-feedback', label: t?.adminNavEmployerFeedback || (lang === 'mr' ? 'नियोक्ता अभिप्राय' : (lang === 'hi' ? 'नियोक्ता प्रतिक्रिया' : 'Employer Feedback')), icon: MessageSquare },
-    { key: 'emerging-skills', label: t?.adminNavEmergingSkills || (lang === 'mr' ? 'उदयोन्मुख कौशल्य रडार' : (lang === 'hi' ? 'उभरते कौशल रडार' : 'Emerging Skills Radar')), icon: Sparkles },
-    { key: 'reports', label: t?.adminNavReports || (lang === 'mr' ? 'कार्यकारी अहवाल' : (lang === 'hi' ? 'कार्यकारी रिपोर्ट' : 'Executive Reports')), icon: FileText },
-    { key: 'policy-planning', label: t?.adminNavPolicyPlanning || (lang === 'mr' ? 'धोरण व वाटप' : (lang === 'hi' ? 'नीति एवं आवंटन' : 'Policy & Allocations')), icon: ShieldAlert }
+    { 
+      key: 'overview', 
+      label: t?.adminNavOverview || (lang === 'mr' ? 'विहंगावलोकन' : (lang === 'hi' ? 'अवलोकन' : 'Overview & Heatmap')), 
+      icon: LayoutDashboard 
+    },
+    { 
+      key: 'course-health', 
+      label: t?.adminNavCourseHealth || (lang === 'mr' ? 'अभ्यासक्रम आरोग्य मॉनिटर' : (lang === 'hi' ? 'पाठ्यक्रम स्वास्थ्य मॉनिटर' : 'Course Health Monitor')), 
+      icon: Activity 
+    },
+    { 
+      key: 'curriculum-alignment', 
+      label: t?.adminNavCurriculum || (lang === 'mr' ? 'अभ्यासक्रम संरेखन' : (lang === 'hi' ? 'पाठ्यक्रम संरेखण' : 'Curriculum Alignment')), 
+      icon: BookOpen 
+    },
+    { 
+      key: 'training-capacity', 
+      label: t?.adminNavTrainingCapacity || (lang === 'mr' ? 'प्रशिक्षण क्षमता' : (lang === 'hi' ? 'प्रशिक्षण क्षमता' : 'Training Capacity')), 
+      icon: Layers 
+    },
+    { 
+      key: 'trainer-readiness', 
+      label: t?.adminNavTrainerReadiness || (lang === 'mr' ? 'प्रशिक्षक सज्जता' : (lang === 'hi' ? 'प्रशिक्षक तत्परता' : 'Trainer Readiness')), 
+      icon: Users 
+    },
+    { 
+      key: 'placement-analytics', 
+      label: t?.adminNavPlacementAnalytics || (lang === 'mr' ? 'प्लेसमेंट विश्लेषण' : (lang === 'hi' ? 'प्लेसमेंट एनालिटिक्स' : 'Placement Analytics')), 
+      icon: CheckCircle2 
+    },
+    { 
+      key: 'employer-feedback', 
+      label: t?.adminNavEmployerFeedback || (lang === 'mr' ? 'नियोक्ता अभिप्राय' : (lang === 'hi' ? 'नियोक्ता प्रतिक्रिया' : 'Employer Feedback')), 
+      icon: MessageSquare 
+    },
+    { 
+      key: 'emerging-skills', 
+      label: t?.adminNavEmergingSkills || (lang === 'mr' ? 'उदयोन्मुख कौशल्य रडार' : (lang === 'hi' ? 'उभरते कौशल रडार' : 'Emerging Skills Radar')), 
+      icon: Sparkles 
+    }
   ];
 
   const handleNavClick = (key) => {
     setActiveNav(key);
-    const targetEl = document.getElementById(`admin-sec-${key}`);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   return (
@@ -102,7 +120,7 @@ export function AdminSidebar({ activeNav, setActiveNav, lang, setLang, t, isSide
         {/* AI Government Copilot */}
         <button
           type="button"
-          className="sidebar-nav-item special-ai"
+          className={`sidebar-nav-item special-ai ${activeNav === 'ai-copilot' ? 'active' : ''}`}
           onClick={() => handleNavClick('ai-copilot')}
         >
           <Bot size={16} style={{ color: 'var(--saffron-primary)' }} />

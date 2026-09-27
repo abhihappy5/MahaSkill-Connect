@@ -6,14 +6,13 @@ import { AdminMapSection } from './AdminMapSection';
 import { CourseHealthTable } from './CourseHealthTable';
 import { CurriculumGapDetector } from './CurriculumGapDetector';
 import { TrainingCapacityView } from './TrainingCapacityView';
+import { TrainerReadinessView } from './TrainerReadinessView';
 import { EmployerSignalsView } from './EmployerSignalsView';
 import { EmergingSkillsRadar } from './EmergingSkillsRadar';
 import { PlacementFunnelView } from './PlacementFunnelView';
 import { AiGovCopilot } from './AiGovCopilot';
 import { PanelLeftOpen } from 'lucide-react';
 
-// Same origin the rest of the app talks to the API on. Override with VITE_API_BASE_URL in .env
-// if the backend isn't proxied through the same origin as the Vite dev server.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
@@ -30,9 +29,7 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
   const [selectedDataType, setSelectedDataType] = useState('All Metrics (Jobs/Skills/Courses/Placements)');
   const [copilotInitialQuery, setCopilotInitialQuery] = useState('');
 
-  // Result of the last "Recommend Curriculum Update" call, keyed by gap id, so
-  // CurriculumGapDetector can render a real inline status instead of a browser alert().
-  // Shape per entry: { status: 'loading' | 'success' | 'error', message, data? }
+  // Result of the last "Recommend Curriculum Update" call, keyed by gap id
   const [curriculumMemoState, setCurriculumMemoState] = useState({});
 
   const toggleSidebar = () => {
@@ -57,10 +54,6 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
     setActiveNav('ai-copilot');
   };
 
-  // Real backend call, replacing the old client-only alert(). Hits
-  // POST /api/admin/curriculum-gaps/:slug/recommend-update, which queues the memo server-side
-  // (persisted memoStatus/memoQueuedAt/memoHistory on the CurriculumGap document) and returns a
-  // structured payload. CurriculumGapDetector renders curriculumMemoState[gapItem.id] inline.
   const handleRecommendCurriculumUpdate = async (gapItem) => {
     const gapId = gapItem.id;
     setCurriculumMemoState((prev) => ({ ...prev, [gapId]: { status: 'loading' } }));
@@ -69,7 +62,7 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
       const res = await fetch(`${API_BASE}/admin/curriculum-gaps/${gapId}/recommend-update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // send the httpOnly JWT cookie set at login
+        credentials: 'include',
         body: JSON.stringify({ note: `Triggered from admin dashboard (${lang})` }),
       });
 
@@ -111,61 +104,133 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
         : `Seat Sanction Request initiated for ${districtName}.\nDraft proposal routed to Finance & Planning Department.`));
   };
 
-    // Sections without a dedicated component yet just show a placeholder instead of crashing.
-  const ComingSoon = ({ label }) => (
-    <div className="admin-section-coming-soon">
-      <h3>{label}</h3>
-      <p>{lang === 'mr' ? 'हा विभाग लवकरच उपलब्ध होईल.' : (lang === 'hi' ? 'यह सेक्शन जल्द उपलब्ध होगा.' : 'This section is coming soon.')}</p>
-    </div>
-  );
-
   const renderActiveSection = () => {
     switch (activeNav) {
       case 'overview':
         return (
-          <AdminKpiCards
-            lang={lang} t={t}
-            selectedDistrict={selectedDistrict}
-            selectedIndustry={selectedIndustry}
-            selectedPeriod={selectedPeriod}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+            {/* 1. Six Executive KPI Diagnostics Cards */}
+            <AdminKpiCards
+              lang={lang} 
+              t={t}
+              selectedDistrict={selectedDistrict}
+              selectedIndustry={selectedIndustry}
+              selectedPeriod={selectedPeriod}
+            />
+
+            {/* 2. Interactive High-Resolution Skill Demand Map & District Intelligence */}
+            <AdminMapSection
+              lang={lang} 
+              t={t}
+              selectedDistrict={selectedDistrict}
+              onGeneratePlanForDistrict={handleGeneratePlanForDistrict}
+            />
+          </div>
         );
+
+      case 'skill-demand':
       case 'skill-demand-map':
         return (
           <AdminMapSection
-            lang={lang} t={t}
+            lang={lang} 
+            t={t}
             selectedDistrict={selectedDistrict}
             onGeneratePlanForDistrict={handleGeneratePlanForDistrict}
           />
         );
+
       case 'course-health':
-        return <CourseHealthTable lang={lang} t={t} selectedDistrict={selectedDistrict} />;
+        return (
+          <CourseHealthTable 
+            lang={lang} 
+            t={t} 
+            selectedDistrict={selectedDistrict} 
+          />
+        );
+
       case 'curriculum-alignment':
         return (
           <CurriculumGapDetector
-            lang={lang} t={t}
+            lang={lang} 
+            t={t}
             memoState={curriculumMemoState}
             onRecommendUpdate={handleRecommendCurriculumUpdate}
           />
         );
+
       case 'training-capacity':
         return (
           <TrainingCapacityView
-            lang={lang} t={t}
+            lang={lang} 
+            t={t}
             selectedDistrict={selectedDistrict}
             onReallocateSeats={handleReallocateSeats}
           />
         );
-      case 'employer-feedback':
-        return <EmployerSignalsView lang={lang} t={t} selectedDistrict={selectedDistrict} />;
-      case 'emerging-skills-radar':
-        return <EmergingSkillsRadar lang={lang} t={t} />;
+
+      case 'trainer-readiness':
+        return (
+          <TrainerReadinessView
+            lang={lang}
+            t={t}
+            selectedDistrict={selectedDistrict}
+          />
+        );
+
       case 'placement-analytics':
-        return <PlacementFunnelView lang={lang} t={t} selectedDistrict={selectedDistrict} />;
+        return (
+          <PlacementFunnelView 
+            lang={lang} 
+            t={t} 
+            selectedDistrict={selectedDistrict} 
+          />
+        );
+
+      case 'employer-feedback':
+        return (
+          <EmployerSignalsView 
+            lang={lang} 
+            t={t} 
+            selectedDistrict={selectedDistrict} 
+          />
+        );
+
+      case 'emerging-skills':
+      case 'emerging-skills-radar':
+        return (
+          <EmergingSkillsRadar 
+            lang={lang} 
+            t={t} 
+          />
+        );
+
       case 'ai-copilot':
-        return <AiGovCopilot lang={lang} t={t} initialQuery={copilotInitialQuery} />;
+        return (
+          <AiGovCopilot 
+            lang={lang} 
+            t={t} 
+            initialQuery={copilotInitialQuery} 
+          />
+        );
+
       default:
-        return <ComingSoon label={activeNav} />;
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+            <AdminKpiCards
+              lang={lang} 
+              t={t}
+              selectedDistrict={selectedDistrict}
+              selectedIndustry={selectedIndustry}
+              selectedPeriod={selectedPeriod}
+            />
+            <AdminMapSection
+              lang={lang} 
+              t={t}
+              selectedDistrict={selectedDistrict}
+              onGeneratePlanForDistrict={handleGeneratePlanForDistrict}
+            />
+          </div>
+        );
     }
   };
   
@@ -212,13 +277,13 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
           onToggleSidebar={toggleSidebar}
         />
 
-        {/* Dashboard Body — only the active section renders now (Phase 0 fix) */}
+        {/* Dashboard Body Content */}
         <div className="admin-body-content">
           {renderActiveSection()}
         </div>
       </div>
 
-      {/* Floating Reopen Button when Sidebar is Collapsed / Full Screen Mode */}
+      {/* Floating Reopen Button when Sidebar is Collapsed */}
       {!isSidebarOpen && (
         <button
           type="button"
