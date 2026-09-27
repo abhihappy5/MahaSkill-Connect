@@ -11,7 +11,6 @@ import { EmployerSignalsView } from './EmployerSignalsView';
 import { EmergingSkillsRadar } from './EmergingSkillsRadar';
 import { PlacementFunnelView } from './PlacementFunnelView';
 import { AiGovCopilot } from './AiGovCopilot';
-import { PanelLeftOpen } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -282,20 +281,6 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
           {renderActiveSection()}
         </div>
       </div>
-
-      {/* Floating Reopen Button when Sidebar is Collapsed */}
-      {!isSidebarOpen && (
-        <button
-          type="button"
-          className="floating-sidebar-reopen-btn"
-          onClick={toggleSidebar}
-          title={lang === 'mr' ? 'साइडबार दाखवा' : (lang === 'hi' ? 'साइडबार दिखाएं' : 'Show Navigation Sidebar')}
-          aria-label="Show Navigation Sidebar"
-        >
-          <PanelLeftOpen size={16} />
-          <span>{lang === 'mr' ? 'मेन्यू / साइडबार' : (lang === 'hi' ? 'मेनू / साइडबार' : 'Navigation Menu')}</span>
-        </button>
-      )}
     </div>
   );
 }

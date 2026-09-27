@@ -48,7 +48,7 @@ export function AdminSidebar({ activeNav, setActiveNav, lang, setLang, t, isSide
     },
     { 
       key: 'employer-feedback', 
-      label: t?.adminNavEmployerFeedback || (lang === 'mr' ? 'नियोक्ता अभिप्राय' : (lang === 'hi' ? 'नियोक्ता प्रतिक्रिया' : 'Employer Feedback')), 
+      label: t?.adminNavEmployerFeedback || (lang === 'mr' ? 'उद्योग प्रमाणीकरण व अभिप्राय' : (lang === 'hi' ? 'उद्योग सत्यापन व प्रतिक्रिया' : 'Employer Validation & Feedback')), 
       icon: MessageSquare 
     },
     { 
@@ -89,7 +89,7 @@ export function AdminSidebar({ activeNav, setActiveNav, lang, setLang, t, isSide
             type="button"
             className="sidebar-toggle-close-btn"
             onClick={onToggleSidebar}
-            title={lang === 'mr' ? 'फुल स्क्रीन: साइडबार लपवा' : (lang === 'hi' ? 'फुल स्क्रीन: साइडबार छिपाएं' : 'Hide Sidebar (Full Screen)')}
+            title={lang === 'mr' ? 'साइडबार लपवा' : (lang === 'hi' ? 'साइडबार छिपाएं' : 'Hide Sidebar')}
             aria-label="Hide Sidebar"
           >
             <PanelLeftClose size={17} />

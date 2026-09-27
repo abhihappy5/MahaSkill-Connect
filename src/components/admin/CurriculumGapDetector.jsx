@@ -70,7 +70,11 @@ export function CurriculumGapDetector({ onRecommendUpdate, memoState, lang, t })
           </h3>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span className="badge badge-green" style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0' }}>
+            <CheckCircle2 size={12} />
+            {selectedGapId === 'gap-ev' ? 'Industry Endorsed (Tata Motors & ARAI)' : 'Industry Endorsed (Bharat Forge & IGTR)'}
+          </span>
           <span className="badge badge-saffron">
             {activeGap.urgency}
           </span>

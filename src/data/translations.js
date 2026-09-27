@@ -19,6 +19,7 @@ export const translations = {
     publicPlatform: "Public Platform",
     studentPortal: "Student",
     jobSeekerPortal: "Job Seeker",
+    employerPortal: "Employer & MSME",
     govtAdminPortal: "Govt Admin",
     liveStatsBanner: "Live Data: 1,42,850+ Jobs • 36 Districts",
 
@@ -380,7 +381,7 @@ export const translations = {
     publicPlatform: "सार्वजनिक पोर्टल",
     studentPortal: "विद्यार्थी",
     jobSeekerPortal: "नोकरी शोधणारे",
-    careerRestartPortal: "करिअर रीस्टार्ट",
+    employerPortal: "नियोक्ता व एमएसएमई",
     govtAdminPortal: "शासकीय प्रशासक",
     liveStatsBanner: "थेट डेटा: १,४२,८५०+ नोकऱ्या • ३६ जिल्हे",
 
@@ -755,7 +756,7 @@ export const translations = {
     publicPlatform: "सार्वजनिक पोर्टल",
     studentPortal: "विद्यार्थी",
     jobSeekerPortal: "नौकरी चाहने वाले",
-    careerRestartPortal: "करियर रीस्टार्ट",
+    employerPortal: "नियोक्ता एवं एमएसएमई",
     govtAdminPortal: "शासकीय व्यवस्थापक",
     liveStatsBanner: "लाइव डेटा: १,४२,८५०+ नौकरियां • ३६ जिले",
 

@@ -332,6 +332,97 @@ export const employerSignalsData = {
   ]
 };
 
+export const employerValidationData = [
+  {
+    id: "VAL-EV-2026",
+    curriculumTitle: "Electric Vehicle (EV) Powertrain & BMS Diagnostics",
+    trade: "Mechanic Auto Electrical & Electronics",
+    targetNSQF: "Level 5",
+    reviewingBody: "Automotive Skills Development Council (ASDC) & Tata Motors",
+    districtHub: "Pune (Chakan-Talegaon)",
+    status: "Fully Endorsed",
+    statusKey: "endorsed",
+    industryPartner: "Tata Motors Passenger Vehicles & ARAI",
+    hiringPledged: 450,
+    readinessScore: 94,
+    feedbackSummary: "Curriculum covers high-voltage safety (600V+ isolation) and CAN Bus diagnostics accurately. Practical lab hours expanded to 60%.",
+    endorsedDate: "18 Aug 2026",
+    modulesValidated: [
+      { name: "Li-Ion & LFP Cell Chemistry Diagnostics", approved: true },
+      { name: "High-Voltage Safety Protocols (ISO 6469)", approved: true },
+      { name: "BMS Flashing & Diagnostic Trouble Codes (DTC)", approved: true },
+      { name: "Thermal Runaway Containment Simulation", approved: true }
+    ],
+    reviewer: "Dr. R. K. Deshmukh (Head of Technical Training, Tata Motors Auto)"
+  },
+  {
+    id: "VAL-CNC-2026",
+    curriculumTitle: "5-Axis Multi-Axis CNC Programming & CMM Metrology",
+    trade: "Machinist / Tool & Die Maker",
+    targetNSQF: "Level 5",
+    reviewingBody: "Mahratta Chamber of Commerce, Industries and Agriculture (MCCIA) & Bharat Forge",
+    districtHub: "Kolhapur & Nashik",
+    status: "Endorsed with Modifications",
+    statusKey: "modified",
+    industryPartner: "Bharat Forge Ltd & Indo-German Tool Room",
+    hiringPledged: 280,
+    readinessScore: 88,
+    feedbackSummary: "Recommended adding GD&T (ASME Y14.5) optical coordinate measurement module before final certification.",
+    endorsedDate: "02 Sep 2026",
+    modulesValidated: [
+      { name: "MasterCAM 5-Axis Toolpath Optimization", approved: true },
+      { name: "Superalloy Machining (Titanium/Inconel)", approved: true },
+      { name: "CMM 3D Optical Metrology Inspection", approved: true },
+      { name: "Tool Wear Sensor Telemetry", approved: false }
+    ],
+    reviewer: "Sunil K. Patwardhan (VP Operations, Bharat Forge Precision Div)"
+  },
+  {
+    id: "VAL-SOLAR-2026",
+    curriculumTitle: "Grid-Tied Solar Micro-Grid & Battery Energy Storage (BESS)",
+    trade: "Solar PV Technician (Surya Mitra)",
+    targetNSQF: "Level 4",
+    reviewingBody: "Skill Council for Green Jobs (SCGJ) & Schneider Electric",
+    districtHub: "Chhatrapati Sambhaji Nagar & Solapur",
+    status: "Under Industry Review",
+    statusKey: "review",
+    industryPartner: "Schneider Electric India & Tata Power Solar",
+    hiringPledged: 320,
+    readinessScore: 78,
+    feedbackSummary: "Review in progress. Evaluating hybrid string inverter synchronization with MSEDCL net metering standards.",
+    endorsedDate: "In Review (Exp. 15 Oct 2026)",
+    modulesValidated: [
+      { name: "Hybrid Inverter Synchronization & Islanding", approved: true },
+      { name: "BESS Container Energy Storage Protocols", approved: true },
+      { name: "MSEDCL Grid Interconnection Compliance", approved: false },
+      { name: "Drone-Assisted Thermographic PV Inspection", approved: false }
+    ],
+    reviewer: "Ananya Roy (Senior Grid Lead, Schneider Electric)"
+  },
+  {
+    id: "VAL-IOT-2026",
+    curriculumTitle: "Smart Factory Industrial IoT & Edge SCADA Integration",
+    trade: "Instrument Mechanic / Industrial Electronics",
+    targetNSQF: "Level 6",
+    reviewingBody: "CII Maharashtra Digital Manufacturing Taskforce",
+    districtHub: "Nagpur (MIHAN) & Mumbai Belt",
+    status: "Fully Endorsed",
+    statusKey: "endorsed",
+    industryPartner: "Siemens India & L&T Heavy Engineering",
+    hiringPledged: 210,
+    readinessScore: 92,
+    feedbackSummary: "Fully aligned with Industry 4.0 shopfloor telemetry standards. Apprentices will be fast-tracked for Automation Technician roles.",
+    endorsedDate: "28 Aug 2026",
+    modulesValidated: [
+      { name: "Siemens S7-1500 PLC & TIA Portal Logic", approved: true },
+      { name: "OPC-UA Edge Gateway & MQTT Sensor Feeds", approved: true },
+      { name: "Industrial Cybersecurity (IEC 62443)", approved: true },
+      { name: "Predictive Maintenance Vibration Analytics", approved: true }
+    ],
+    reviewer: "V. R. Natarajan (Principal Architect, Siemens Industry Digital)"
+  }
+];
+
 export const emergingSkillsRadarData = [
   { skill: "Generative AI & LLM Data", demandIndex: 94, growthYoY: "+64%", seatAvailability: 32, industryAdoption: "78% (High)" },
   { skill: "EV Powertrain & BMS", demandIndex: 92, growthYoY: "+52%", seatAvailability: 45, industryAdoption: "85% (High)" },

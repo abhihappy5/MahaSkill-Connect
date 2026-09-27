@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   GraduationCap, 
   Briefcase, 
-  RefreshCw, 
+  Building2,
   ShieldCheck, 
   ArrowRight,
   Sparkles,
@@ -16,6 +16,7 @@ export function RoleEntryCards({
   onFindCareer, 
   onOpenStudentDashboard,
   onOpenJobSeekerDashboard,
+  onOpenEmployerPortal,
   onOpenAdminDashboard
 }) {
   const cards = [
@@ -45,7 +46,19 @@ export function RoleEntryCards({
       tags: ["AI Resume Scan", "Direct MSME Jobs", "Digital Badge"],
       action: () => onOpenJobSeekerDashboard()
     },
-
+    {
+      id: "employer",
+      type: "card-employer",
+      icon: Building2,
+      color: "#059669",
+      bgColor: "#ecfdf5",
+      tag: t.employerTag || "Employer & MSME",
+      title: t.employerTitle || "Enterprise & MSME Hiring",
+      desc: t.employerDesc || "1-Click Voice job posting in Marathi/Hindi, match ITI candidates & endorse trade curricula.",
+      cta: t.employerCta || "Enter Employer Portal",
+      tags: ["Voice AI Job Post", "Direct ITI Hires", "Curriculum Vetting"],
+      action: () => (onOpenEmployerPortal ? onOpenEmployerPortal() : onFindCareer("employer"))
+    },
     {
       id: "admin",
       type: "card-admin",

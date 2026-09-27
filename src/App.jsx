@@ -12,6 +12,7 @@ import { PublicJobsView } from './components/public/PublicJobsView';
 import { StudentDashboard } from './components/student/StudentDashboard';
 import { JobSeekerDashboard } from './components/dashboard/JobSeekerDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { EmployerPortal } from './components/employer/EmployerPortal';
 import { UnifiedAiModal } from './components/ai/UnifiedAiModal';
 import { VoiceInteractionOverlay } from './components/ai/VoiceInteractionOverlay';
 import { MobileBottomNav } from './components/ai/MobileBottomNav';
@@ -22,7 +23,7 @@ import { Bot, Sparkles, Mic } from 'lucide-react';
 
 export default function App() {
   const [lang, setLang] = useState('en'); // 'en' | 'mr' | 'hi'
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'student' | 'dashboard' | 'restart' | 'admin'
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'student' | 'dashboard' | 'employer' | 'admin'
   const [publicSubView, setPublicSubView] = useState('home'); // 'home' | 'careers' | 'courses' | 'jobs' | 'demand'
   const [activeSection, setActiveSection] = useState('home');
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -54,10 +55,8 @@ export default function App() {
 
   const t = translations[lang] || translations.en;
 
-  // Global site Header/Footer are hidden for 'admin' (its own integrated header) and now also
-  // for 'student' (the student portal has its own subnav directly below where the global header
-  // used to sit, so the global header/language bar was redundant on top of it).
-  const showGlobalChrome = currentView !== 'admin' && currentView !== 'student';
+  // Global site Header/Footer are hidden for 'admin', 'student', and 'employer'
+  const showGlobalChrome = currentView !== 'admin' && currentView !== 'student' && currentView !== 'employer';
 
   const handleOpenAuth = (mode = 'login') => {
     setAuthMode(mode);
@@ -79,8 +78,8 @@ export default function App() {
       setCurrentView('student');
       return;
     }
-    if (rolePreset === 'reskill') {
-      setCurrentView('restart');
+    if (rolePreset === 'employer') {
+      setCurrentView('employer');
       return;
     }
     if (rolePreset === 'admin') {
@@ -168,12 +167,11 @@ export default function App() {
             t={t}
           />
         </main>
-      ) : currentView === 'restart' ? (
-        /* ================= 4. CAREER RESTART PORTAL ================= */
+      ) : currentView === 'employer' ? (
+        /* ================= 4. EMPLOYER & MSME PORTAL ================= */
         <main id="main-content">
-          <CareerRestartDashboard 
+          <EmployerPortal 
             onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
-            onOpenAssistant={(prompt) => handleOpenAiModal(prompt || 'What careers can I transition into?', 'restart')}
             lang={lang}
             setLang={setLang}
             t={t}
@@ -232,7 +230,7 @@ export default function App() {
                 onOpenAuth={handleOpenAuth}
                 onOpenStudentDashboard={() => setCurrentView('student')}
                 onOpenJobSeekerDashboard={() => setCurrentView('dashboard')}
-                onOpenCareerRestartDashboard={() => setCurrentView('restart')}
+                onOpenEmployerPortal={() => setCurrentView('employer')}
                 onOpenAdminDashboard={() => setCurrentView('admin')}
               />
 

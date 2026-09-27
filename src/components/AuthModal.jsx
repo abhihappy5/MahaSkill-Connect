@@ -309,23 +309,37 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px', borderRadius: '16px', overflow: 'hidden', padding: 0 }}>
-        
+      <div 
+        className="modal-box" 
+        onClick={(e) => e.stopPropagation()} 
+        style={{ 
+          maxWidth: '520px', 
+          width: '100%',
+          maxHeight: '92vh',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRadius: '16px', 
+          overflow: 'hidden', 
+          padding: 0,
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)'
+        }}
+      >
         {/* Top Header */}
         <div style={{
           background: 'linear-gradient(135deg, #0b192c 0%, #1e3e62 100%)',
           color: '#ffffff',
-          padding: '18px 24px',
-          position: 'relative'
+          padding: '16px 20px',
+          position: 'relative',
+          flexShrink: 0
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
             <span style={{
               background: 'rgba(255, 107, 0, 0.25)',
               border: '1px solid #ff6b00',
               color: '#ff9e58',
               fontSize: '0.72rem',
               fontWeight: 800,
-              padding: '3px 10px',
+              padding: '2px 8px',
               borderRadius: '20px',
               textTransform: 'uppercase',
               letterSpacing: '0.5px'
@@ -352,10 +366,10 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
             </button>
           </div>
 
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 4px 0', color: '#ffffff' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 2px 0', color: '#ffffff' }}>
             {authMode === 'login' ? 'MahaSkill Portal Login' : 'Register on MahaSkill Connect'}
           </h3>
-          <p style={{ margin: 0, fontSize: '0.82rem', color: '#94a3b8' }}>
+          <p style={{ margin: 0, fontSize: '0.78rem', color: '#94a3b8' }}>
             {authMode === 'login' 
               ? 'Access candidate matching, training admissions & labour intelligence' 
               : 'Create your verified account with DigiLocker-linked credentials'}
@@ -365,11 +379,12 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
         {/* Persona Selector Tabs */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+          gridTemplateColumns: `repeat(${roles.length}, 1fr)`,
           gap: '2px',
           background: '#0f172a',
           padding: '4px',
-          borderBottom: '1px solid #334155'
+          borderBottom: '1px solid #334155',
+          flexShrink: 0
         }}>
           {roles.map((r) => {
             const Icon = r.icon;
@@ -383,7 +398,7 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                   border: 'none',
                   background: isSelected ? '#1e293b' : 'transparent',
                   color: isSelected ? '#38bdf8' : '#94a3b8',
-                  padding: '8px 2px',
+                  padding: '6px 2px',
                   borderRadius: '6px',
                   fontSize: '0.7rem',
                   fontWeight: 700,
@@ -391,20 +406,26 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '2px',
                   borderBottom: isSelected ? '2px solid #38bdf8' : '2px solid transparent',
                   transition: 'all 0.15s ease'
                 }}
               >
-                <Icon size={15} style={{ color: isSelected ? '#38bdf8' : '#64748b' }} />
+                <Icon size={14} style={{ color: isSelected ? '#38bdf8' : '#64748b' }} />
                 <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{r.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Modal Body */}
-        <div style={{ padding: '18px 24px', maxHeight: '75vh', overflowY: 'auto' }}>
+        {/* Modal Body with flex scroll and generous bottom padding */}
+        <div style={{ 
+          padding: '16px 22px 28px 22px', 
+          flex: 1, 
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
           
           {/* Success Banner */}
           {successNotice ? (

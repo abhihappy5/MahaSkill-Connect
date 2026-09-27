@@ -6,6 +6,7 @@ import {
   User, 
   Briefcase, 
   GraduationCap, 
+  Building2,
   TrendingUp, 
   Bot,
   ShieldCheck,
@@ -86,6 +87,7 @@ export function Header({
   const portalsList = [
     { key: 'student', label: t.studentPortal || 'Student & Youth', icon: GraduationCap, color: '#f59e0b', desc: 'ITI trades, aptitude & college courses' },
     { key: 'dashboard', label: t.jobSeekerPortal || 'Job Seeker', icon: Briefcase, color: '#3b82f6', desc: 'AI job match & DigiLocker applications' },
+    { key: 'employer', label: t.employerPortal || (lang === 'mr' ? 'नियोक्ता व एमएसएमई' : (lang === 'hi' ? 'नियोक्ता एवं एमएसएमई' : 'Employer & MSME')), icon: Building2, color: '#059669', desc: 'Voice job posting & candidate matching' },
     { key: 'admin', label: t.govtAdminPortal || 'Govt Admin Cockpit', icon: ShieldCheck, color: '#6366f1', desc: '36 district heatmaps & labour KPIs' },
   ];
 
@@ -371,8 +373,8 @@ export function Header({
                     onClick={() => {
                       if (currentUser.role === 'student') setCurrentView('student');
                       else if (currentUser.role === 'candidate' || currentUser.role === 'jobseeker') setCurrentView('dashboard');
-                      else if (currentUser.role === 'restart') setCurrentView('restart');
-                      else if (currentUser.role === 'admin' || currentUser.role === 'employer') setCurrentView('admin');
+                      else if (currentUser.role === 'employer' || currentUser.role === 'recruiter') setCurrentView('employer');
+                      else if (currentUser.role === 'admin') setCurrentView('admin');
                     }}
                     style={{ 
                       display: 'flex', 

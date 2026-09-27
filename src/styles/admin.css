@@ -94,44 +94,6 @@
   background: var(--saffron-light);
 }
 
-.floating-sidebar-reopen-btn {
-  position: fixed;
-  bottom: 24px;
-  left: 20px;
-  z-index: 940;
-  background: var(--navy-deep);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.82rem;
-  transition: all 0.2s ease;
-  animation: slideInLeft 0.3s ease-out;
-}
-
-.floating-sidebar-reopen-btn:hover {
-  background: var(--saffron-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(234, 88, 12, 0.4);
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
 .admin-seal-emblem {
   width: 36px;
   height: 36px;

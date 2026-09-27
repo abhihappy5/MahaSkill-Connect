@@ -10,10 +10,7 @@ import {
   ShieldCheck,
   Calendar,
   FileSpreadsheet,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Maximize2,
-  Minimize2
+  PanelLeftOpen
 } from 'lucide-react';
 import { allDistrictsList } from '../../data/districtsData';
 
@@ -71,33 +68,29 @@ export function AdminHeader({
     <div className="admin-header-sticky-wrapper">
       {/* Top Header Bar */}
       <header className="admin-top-header" role="banner" aria-label="Government Admin Header" style={{ padding: '10px 20px' }}>
-        {/* Left Side: Sidebar Toggle, Logout Button & Clean Title */}
+        {/* Left Side: Sidebar Reopen Toggle (when collapsed), Logout Button & Clean Title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {onToggleSidebar && (
+          {onToggleSidebar && !isSidebarOpen && (
             <button 
               type="button"
               className="btn btn-outline btn-sm admin-sidebar-toggle-btn"
               onClick={onToggleSidebar}
-              title={isSidebarOpen 
-                ? (lang === 'mr' ? 'फुल स्क्रीन: साइडबार लपवा' : (lang === 'hi' ? 'फुल स्क्रीन: साइडबार छिपाएं' : 'Full Screen: Hide Sidebar')) 
-                : (lang === 'mr' ? 'साइडबार दाखवा' : (lang === 'hi' ? 'साइडबार दिखाएं' : 'Show Navigation Sidebar'))}
-              aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+              title={lang === 'mr' ? 'साइडबार दाखवा' : (lang === 'hi' ? 'साइडबार दिखाएं' : 'Show Sidebar')}
+              aria-label="Show sidebar"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '6px 10px',
-                background: !isSidebarOpen ? 'var(--saffron-light)' : 'transparent',
-                borderColor: !isSidebarOpen ? 'var(--saffron-border)' : 'var(--border-medium)',
-                color: !isSidebarOpen ? 'var(--saffron-primary)' : 'var(--navy-deep)',
+                padding: '6px 12px',
+                background: 'var(--saffron-light)',
+                borderColor: 'var(--saffron-border)',
+                color: 'var(--saffron-primary)',
                 fontWeight: 700
               }}
             >
-              {isSidebarOpen ? <PanelLeftClose size={15} /> : <PanelLeftOpen size={15} style={{ color: 'var(--saffron-primary)' }} />}
-              <span style={{ fontSize: '0.76rem' }}>
-                {isSidebarOpen 
-                  ? (lang === 'mr' ? 'फुल स्क्रीन' : (lang === 'hi' ? 'फुल स्क्रीन' : 'Full Screen')) 
-                  : (lang === 'mr' ? 'साइडबार' : (lang === 'hi' ? 'साइडबार' : 'Sidebar'))}
+              <PanelLeftOpen size={15} style={{ color: 'var(--saffron-primary)' }} />
+              <span style={{ fontSize: '0.78rem' }}>
+                {lang === 'mr' ? 'साइडबार दाखवा' : (lang === 'hi' ? 'साइडबार दिखाएं' : 'Show Sidebar')}
               </span>
             </button>
           )}
