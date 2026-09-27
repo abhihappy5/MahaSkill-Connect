@@ -71,7 +71,6 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
   const roles = [
     { key: 'candidate', label: 'Job Seeker', icon: User, badge: 'Job Match' },
     { key: 'student', label: 'Student', icon: GraduationCap, badge: 'ITI / Skills' },
-    { key: 'restart', label: 'Career Restart', icon: RotateCcw, badge: 'Women & Reskill' },
     { key: 'employer', label: 'Employer / MSME', icon: Building2, badge: 'Hire Talent' },
     { key: 'admin', label: 'Govt Admin', icon: ShieldCheck, badge: 'DVET Cockpit' }
   ];
@@ -712,7 +711,6 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                       >
                         <option value="candidate">Job Seeker / Trainee</option>
                         <option value="student">Student / Youth</option>
-                        <option value="restart">Career Restart (Women/Reskill)</option>
                         <option value="employer">Employer / MSME</option>
                       </select>
                     </div>

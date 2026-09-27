@@ -1,7 +1,7 @@
 # MahaSkill Connect — Backend API
 
 Node.js + Express + MongoDB (Mongoose) REST API for the MahaSkill Connect frontend
-(public site, Student Portal, Job Seeker Portal, Career Restart Portal, Admin Portal, Unified AI Assistant).
+(public site, Student Portal, Job Seeker Portal, Admin Portal, Unified AI Assistant).
 
 ## Stack
 Express 4, Mongoose 8, JWT auth (httpOnly cookie + Bearer token), bcryptjs, helmet, cors, morgan, express-rate-limit.

@@ -13,7 +13,7 @@
   background: #ffffff;
   border-bottom: 2px solid var(--border-subtle);
   position: sticky;
-  top: 72px;
+  top: 0;
   z-index: 100;
   box-shadow: var(--shadow-sm);
 }
@@ -21,7 +21,8 @@
 .student-subnav-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 28px;
   overflow-x: auto;
   scrollbar-width: none;
   padding: 0 16px;
@@ -29,6 +30,65 @@
 
 .student-subnav-inner::-webkit-scrollbar {
   display: none;
+}
+
+/* Student Subnav Logo (links back to public homepage) */
+.student-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+
+.student-logo-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(234, 88, 12, 0.3);
+  flex-shrink: 0;
+}
+
+.student-logo-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.student-logo-brand {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--navy-deep);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.student-logo-brand span {
+  color: var(--saffron-primary);
+}
+
+.student-logo-tagline {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.student-subnav-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border-subtle);
+  flex-shrink: 0;
 }
 
 .student-nav-tabs {

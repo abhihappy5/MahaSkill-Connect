@@ -7,14 +7,19 @@ import {
   Sparkles, 
   FileText, 
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Loader2
 } from 'lucide-react';
 import { curriculumGapAnalyses } from '../../data/adminDashboardData';
 
-export function CurriculumGapDetector({ onRecommendUpdate, lang, t }) {
+export function CurriculumGapDetector({ onRecommendUpdate, memoState, lang, t }) {
   const [selectedGapId, setSelectedGapId] = useState('gap-ev');
 
   const activeGap = curriculumGapAnalyses.find(g => g.id === selectedGapId) || curriculumGapAnalyses[0];
+
+  // memoState is keyed by gap id: { status: 'loading' | 'success' | 'error', message, data? }
+  const activeMemoState = memoState?.[activeGap.id];
+  const isRecommending = activeMemoState?.status === 'loading';
 
   const occupationLocalized = lang === 'mr' 
     ? (selectedGapId === 'gap-ev' ? 'इलेक्ट्रिक व्हेईकल (EV) सर्व्हिस व पॉवरट्रेन तंत्रज्ञ' : '५-अक्षीय प्रगत CNC व VMC मशीनिंग ऑपरेटर')
@@ -131,12 +136,47 @@ export function CurriculumGapDetector({ onRecommendUpdate, lang, t }) {
           type="button" 
           className="btn btn-primary"
           onClick={() => onRecommendUpdate(activeGap)}
+          disabled={isRecommending}
         >
-          <FileText size={16} />
-          {lang === 'mr' ? 'अभ्यासक्रम सुधारणा सुचवा' : (lang === 'hi' ? 'पाठ्यक्रम संशोधन अनुशंसित करें' : 'Recommend Curriculum Update')}
-          <ArrowRight size={16} />
+          {isRecommending ? <Loader2 size={16} className="spin-icon" /> : <FileText size={16} />}
+          {isRecommending
+            ? (lang === 'mr' ? 'तयार होत आहे...' : (lang === 'hi' ? 'तैयार हो रहा है...' : 'Generating...'))
+            : (lang === 'mr' ? 'अभ्यासक्रम सुधारणा सुचवा' : (lang === 'hi' ? 'पाठ्यक्रम संशोधन अनुशंसित करें' : 'Recommend Curriculum Update'))}
+          {!isRecommending && <ArrowRight size={16} />}
         </button>
       </div>
+
+      {/* Real backend result, replacing the old alert() popup */}
+      {activeMemoState && activeMemoState.status !== 'loading' && (
+        <div
+          role="status"
+          style={{
+            marginTop: '16px',
+            padding: '16px 20px',
+            borderRadius: 'var(--radius-lg)',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '10px',
+            fontSize: '0.86rem',
+            lineHeight: 1.5,
+            ...(activeMemoState.status === 'success'
+              ? { background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#14532d' }
+              : { background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b' }),
+          }}
+        >
+          {activeMemoState.status === 'success'
+            ? <ShieldCheck size={18} style={{ flexShrink: 0, marginTop: '1px' }} />
+            : <XCircle size={18} style={{ flexShrink: 0, marginTop: '1px' }} />}
+          <div style={{ whiteSpace: 'pre-line' }}>
+            {activeMemoState.message}
+            {activeMemoState.status === 'success' && activeMemoState.data?.memoQueuedAt && (
+              <div style={{ marginTop: '6px', fontSize: '0.76rem', fontWeight: 700, opacity: 0.8 }}>
+                {lang === 'mr' ? 'स्थिती: रांगेत' : (lang === 'hi' ? 'स्थिति: कतार में' : 'Status: Queued')} · {new Date(activeMemoState.data.memoQueuedAt).toLocaleString()}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

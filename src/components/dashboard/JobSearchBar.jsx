@@ -68,10 +68,10 @@ export function JobSearchBar({
 
   return (
     <div className="job-search-card" id="section-find-jobs" role="search" aria-label="Job Search Engine">
-      <h2 className="search-bar-headline">
-        <Search size={20} style={{ color: 'var(--saffron-primary)' }} />
-        {lang === 'mr' ? 'तुम्ही कोणती नोकरी शोधत आहात?' : (lang === 'hi' ? 'आप कौन सी नौकरी खोज रहे हैं?' : 'What job are you looking for?')}
-      </h2>
+      {/* Persistent "What job are you looking for?" headline removed per request —
+          that question is now asked once (see the first-visit modal in
+          JobSeekerDashboard.jsx) and can be revisited anytime via Account
+          Settings / the profile avatar in DashboardHeader.jsx. */}
 
       {/* Main Search Query Box */}
       <div className="dash-search-input-wrap">

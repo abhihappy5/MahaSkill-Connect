@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { DashboardHeader } from './DashboardHeader';
 import { CandidateOverview } from './CandidateOverview';
 import { JobSearchBar } from './JobSearchBar';
@@ -16,7 +17,8 @@ export function JobSeekerDashboard({
   setLang, 
   t 
 }) {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // 'dashboard' tab removed per request — Find Jobs is now the landing tab
+  const [activeTab, setActiveTab] = useState('find-jobs');
   
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,6 +36,48 @@ export function JobSeekerDashboard({
 
   // Contextual Job AI Modal State
   const [selectedJobForAI, setSelectedJobForAI] = useState(null);
+
+  // "What job are you looking for?" is now asked once (first visit only, via
+  // localStorage) instead of always showing as a headline in the search bar.
+  // It can be revisited anytime via the Account Settings icon or the profile
+  // avatar in DashboardHeader.jsx.
+  const [isJobPrefModalOpen, setIsJobPrefModalOpen] = useState(false);
+  const [isFirstVisitPrompt, setIsFirstVisitPrompt] = useState(false);
+  const [jobPrefDraft, setJobPrefDraft] = useState('');
+
+  useEffect(() => {
+    const alreadyAsked = window.localStorage.getItem('msc_job_search_asked');
+    const savedPref = window.localStorage.getItem('msc_job_search_pref');
+    if (!alreadyAsked) {
+      setIsFirstVisitPrompt(true);
+      setIsJobPrefModalOpen(true);
+    } else if (savedPref) {
+      setSearchQuery(savedPref);
+    }
+    // Run once on mount only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleOpenSettings = () => {
+    setJobPrefDraft(searchQuery);
+    setIsFirstVisitPrompt(false);
+    setIsJobPrefModalOpen(true);
+  };
+
+  const handleCloseJobPrefModal = () => {
+    window.localStorage.setItem('msc_job_search_asked', 'true');
+    setIsJobPrefModalOpen(false);
+    setIsFirstVisitPrompt(false);
+  };
+
+  const handleSaveJobPref = () => {
+    window.localStorage.setItem('msc_job_search_asked', 'true');
+    window.localStorage.setItem('msc_job_search_pref', jobPrefDraft);
+    setSearchQuery(jobPrefDraft);
+    setIsJobPrefModalOpen(false);
+    setIsFirstVisitPrompt(false);
+    handleScrollToSection('section-ai-matches');
+  };
 
   // Filter Jobs
   const filteredJobs = mockJobsData.filter((job) => {
@@ -109,6 +153,7 @@ export function JobSeekerDashboard({
         setActiveTab={setActiveTab}
         onBackToHome={onBackToHome}
         onOpenAssistant={onOpenAssistant}
+        onOpenSettings={handleOpenSettings}
         lang={lang}
         setLang={setLang}
       />
@@ -181,6 +226,57 @@ export function JobSeekerDashboard({
           onClose={() => setSelectedJobForAI(null)}
           lang={lang}
         />
+      )}
+
+      {/* "What job are you looking for?" — asked once on first visit, and
+          reopenable anytime via Account Settings / the profile avatar */}
+      {isJobPrefModalOpen && (
+        <div class="modal-overlay" onClick={handleCloseJobPrefModal} role="dialog" aria-modal="true">
+          <div class="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+            <div class="modal-header">
+              <h3 class="modal-title">
+                {lang === 'mr' ? 'तुम्ही कोणती नोकरी शोधत आहात?' : (lang === 'hi' ? 'आप कौन सी नौकरी खोज रहे हैं?' : 'What job are you looking for?')}
+              </h3>
+              <button class="modal-close-btn" onClick={handleCloseJobPrefModal} aria-label="Close modal">
+                <X size={20} />
+              </button>
+            </div>
+            <div class="modal-body">
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+                {isFirstVisitPrompt
+                  ? (lang === 'mr' ? 'हे तुम्हाला लगेच सर्वोत्तम जुळण्या दाखवण्यास मदत करेल. तुम्ही हे नंतर कधीही प्रोफाइल सेटिंग्जमधून बदलू शकता.' : (lang === 'hi' ? 'इससे हमें आपको तुरंत सर्वश्रेष्ठ मैच दिखाने में मदद मिलेगी। आप इसे बाद में कभी भी प्रोफ़ाइल सेटिंग्स से बदल सकते हैं।' : "This helps us show you the best matches right away. You can change this anytime from your profile settings."))
+                  : (lang === 'mr' ? 'तुमचे नोकरी शोध प्राधान्य अद्यतनित करा.' : (lang === 'hi' ? 'अपनी नौकरी खोज प्राथमिकता अपडेट करें।' : 'Update your job search preference.'))
+                }
+              </p>
+              <input
+                type="text"
+                style={{
+                  width: '100%',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '10px 14px',
+                  fontSize: '0.95rem',
+                  outline: 'none'
+                }}
+                placeholder={lang === 'mr' ? "उदा. ईव्ही तंत्रज्ञ, पीएलसी प्रोग्रामर..." : (lang === 'hi' ? "जैसे EV तकनीशियन, PLC प्रोग्रामर..." : "e.g. EV Technician, PLC Programmer...")}
+                value={jobPrefDraft}
+                onChange={(e) => setJobPrefDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveJobPref(); }}
+                autoFocus
+              />
+              <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                {isFirstVisitPrompt && (
+                  <button type="button" class="btn btn-outline" style={{ flex: 1 }} onClick={handleCloseJobPrefModal}>
+                    {lang === 'mr' ? 'नंतर' : (lang === 'hi' ? 'बाद में' : 'Skip for now')}
+                  </button>
+                )}
+                <button type="button" class="btn btn-primary" style={{ flex: 1.4 }} onClick={handleSaveJobPref}>
+                  {lang === 'mr' ? 'जतन करा व शोधा' : (lang === 'hi' ? 'सहेजें और खोजें' : 'Save & Search')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

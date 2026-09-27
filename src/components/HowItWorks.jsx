@@ -1,174 +1,85 @@
 import React, { useState } from 'react';
-import { 
-  Workflow, 
-  Building2, 
-  BrainCircuit, 
-  GraduationCap, 
-  Award, 
-  Briefcase, 
-  RotateCw,
-  ArrowRight,
-  CheckCircle2
-} from 'lucide-react';
+import { UserPlus, ClipboardCheck, Sparkles, GraduationCap, BadgeCheck, Briefcase } from 'lucide-react';
 
+// Imported in App.jsx ("Homepage Section 4: How MahaSkill Connect Works") but never existed
+// as a file. No backing data file for this one (it's a fixed 6-step pipeline, matching
+// components.css's .pipeline-steps-grid which is a hard-coded repeat(6, 1fr)), so the steps
+// are defined locally here rather than pulled from src/data.
 export function HowItWorks({ t, lang }) {
   const [activeStep, setActiveStep] = useState(1);
 
   const steps = [
     {
       num: 1,
-      title: t.step1Title,
-      desc: t.step1Desc,
-      icon: Building2,
-      detail: lang === 'mr' 
-        ? "पुण्यातील ऑटो कंपन्या, मुंबईतील आयटी व फिनटेक दिग्गज आणि ५०,०००+ एमएसएमई कडून थेट भरती गरजांचे विश्लेषण केले जाते."
-        : (lang === 'hi'
-          ? "पुणे की ऑटो कंपनियों, मुंबई के आईटी दिग्गजों और ५०,०००+ एमएसएमई से वास्तविक समय की भर्ती मांग का विश्लेषण किया जाता है।"
-          : "Aggregates real-time hiring demands from 50,000+ MSMEs, Tier-1 auto majors in Pune, IT giants in Mumbai, and new MIDC projects.")
+      icon: UserPlus,
+      title: t?.step1Title || (lang === 'mr' ? 'प्रोफाइल तयार करा' : (lang === 'hi' ? 'प्रोफ़ाइल बनाएं' : 'Create Your Profile')),
+      desc: t?.step1Desc || (lang === 'mr' ? 'DigiLocker सह सत्यापित प्रोफाइल तयार करा.' : (lang === 'hi' ? 'DigiLocker से सत्यापित प्रोफ़ाइल बनाएं।' : 'Set up a DigiLocker-verified profile in minutes.')),
     },
     {
       num: 2,
-      title: t.step2Title,
-      desc: t.step2Desc,
-      icon: BrainCircuit,
-      detail: lang === 'mr'
-        ? "एआय अल्गोरिदम जिल्हास्तरीय मनुष्यबळ आकडेवारी आणि नवीन तंत्रज्ञान गरजांची तुलना करून कौशल्य तफावत अचूकपणे ओळखतात."
-        : (lang === 'hi'
-          ? "एआई एल्गोरिदम जिला स्तरीय कार्यबल आंकड़ों और तकनीकी आवश्यकताओं का मिलान करके सटीक कौशल अंतर की पहचान करते हैं।"
-          : "AI algorithms cross-reference district workforce stats with emerging technological requirements to pinpoint exact skill deficits.")
+      icon: ClipboardCheck,
+      title: t?.step2Title || (lang === 'mr' ? 'कौशल्य मूल्यांकन' : (lang === 'hi' ? 'कौशल मूल्यांकन' : 'Skill Assessment')),
+      desc: t?.step2Desc || (lang === 'mr' ? 'तुमची सद्यस्थिती जाणून घ्या.' : (lang === 'hi' ? 'अपनी वर्तमान स्थिति जानें।' : 'Understand where you stand against industry benchmarks.')),
     },
     {
       num: 3,
-      title: t.step3Title,
-      desc: t.step3Desc,
-      icon: GraduationCap,
-      detail: lang === 'mr'
-        ? "विद्यार्थ्यांना थेट ३,४२०+ मान्यताप्राप्त आयटीआय, तंत्रनिकेतन आणि उत्कृष्ट केंद्रांमध्ये शासकीय शिष्यवृत्तीसह प्रवेश दिला जातो."
-        : (lang === 'hi'
-          ? "छात्रों को सीधे ३,४२०+ मान्यता प्राप्त आईटीआई, पॉलिटेक्निक और उत्कृष्ट केंद्रों में सरकारी वित्तीय सहायता के साथ नामांकित किया जाता है।"
-          : "Directly enrolls learners into 3,420+ accredited ITIs, polytechnics, and Centers of Excellence with state-backed financial aid.")
+      icon: Sparkles,
+      title: t?.step3Title || (lang === 'mr' ? 'एआय शिफारसी' : (lang === 'hi' ? 'एआई सिफारिशें' : 'AI Recommendations')),
+      desc: t?.step3Desc || (lang === 'mr' ? 'तुमच्यासाठी योग्य करिअर व कोर्सेस शोधा.' : (lang === 'hi' ? 'अपने लिए सही करियर एवं कोर्स खोजें।' : 'Get matched to careers and courses that fit your profile.')),
     },
     {
       num: 4,
-      title: t.step4Title,
-      desc: t.step4Desc,
-      icon: Award,
-      detail: lang === 'mr'
-        ? "प्रात्यक्षिक व डिजिटल परीक्षांद्वारे मूल्यांकन करून संपूर्ण राज्यात ग्राह्य असणारे सुरक्षित डिजिटल प्रमाणपत्र दिले जाते."
-        : (lang === 'hi'
-          ? "व्यावहारिक एवं डिजिटल परीक्षाओं द्वारा मूल्यांकन कर राज्य भर में मान्य डिजिटल प्रमाणित बैज जारी किए जाते हैं।"
-          : "Conducts hands-on and digital assessments to issue tamper-proof verifiable digital micro-credentials recognized statewide.")
+      icon: GraduationCap,
+      title: t?.step4Title || (lang === 'mr' ? 'नोंदणी व शिकणे' : (lang === 'hi' ? 'नामांकन एवं सीखना' : 'Enroll & Learn')),
+      desc: t?.step4Desc || (lang === 'mr' ? 'शासकीय अनुदानित अभ्यासक्रमांमध्ये सहभागी व्हा.' : (lang === 'hi' ? 'सरकारी सब्सिडी वाले पाठ्यक्रमों में शामिल हों।' : 'Join government-subsidized vocational courses.')),
     },
     {
       num: 5,
-      title: t.step5Title,
-      desc: t.step5Desc,
-      icon: Briefcase,
-      detail: lang === 'mr'
-        ? "थेट मॅचमेकिंग अल्गोरिदम प्रमाणित उमेदवारांना मध्यस्थांशिवाय थेट उद्योगांमधील रिक्त पदांशी जोडतात."
-        : (lang === 'hi'
-          ? "सीधे मैचमेकिंग एल्गोरिदम प्रमाणित उम्मीदवारों को बिना किसी बिचौलिए के सक्रिय रिक्तियों से जोड़ते हैं।"
-          : "Direct matchmaking algorithms connect verified job seekers to matching vacancies without middleman overhead.")
+      icon: BadgeCheck,
+      title: t?.step5Title || (lang === 'mr' ? 'प्रमाणपत्र मिळवा' : (lang === 'hi' ? 'प्रमाणन प्राप्त करें' : 'Get Certified')),
+      desc: t?.step5Desc || (lang === 'mr' ? 'DVET/MSBTE मान्यताप्राप्त प्रमाणपत्र मिळवा.' : (lang === 'hi' ? 'DVET/MSBTE मान्यता प्राप्त प्रमाणन पाएं।' : 'Earn a DVET/MSBTE-recognized credential.')),
     },
     {
       num: 6,
-      title: t.step6Title,
-      desc: t.step6Desc,
-      icon: RotateCw,
-      detail: lang === 'mr'
-        ? "उद्योगांकडून सतत मिळणाऱ्या अभिप्रायाच्या आधारे अभ्यासक्रम वेळोवेळी अद्ययावत केला जातो जेणेकरून मनुष्यबळ दर्जेदार राहील."
-        : (lang === 'hi'
-          ? "उद्योगों से निरंतर फीडबैक के आधार पर पाठ्यक्रमों को अद्यतन किया जाता है ताकि प्रतिभा विश्वस्तरीय बनी रहे।"
-          : "Ongoing employer retention feedback continuously updates vocational syllabi to keep Maharashtra's talent world-class.")
-    }
+      icon: Briefcase,
+      title: t?.step6Title || (lang === 'mr' ? 'नोकरी मिळवा' : (lang === 'hi' ? 'नौकरी पाएं' : 'Get Placed')),
+      desc: t?.step6Desc || (lang === 'mr' ? 'थेट नियोक्त्यांशी जोडले जा.' : (lang === 'hi' ? 'सीधे नियोक्ताओं से जुड़ें।' : 'Connect directly with verified employers hiring now.')),
+    },
   ];
 
   return (
-    <section id="how-it-works" className="how-it-works-section" aria-label="How MahaSkill Connect Works">
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <span className="section-tag">
-            <Workflow size={14} />
-            {t.howItWorksTag}
-          </span>
-          <h2 className="section-title">{t.howItWorksTitle}</h2>
-          <p className="section-subtitle">{t.howItWorksSubtitle}</p>
+    <section className="how-it-works-section">
+      <div className="container-wide">
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--navy-deep)', marginBottom: '8px' }}>
+            {t?.howItWorksTitle || (lang === 'mr' ? 'महास्किल कनेक्ट कसे कार्य करते' : (lang === 'hi' ? 'महास्किल कनेक्ट कैसे काम करता है' : 'How MahaSkill Connect Works'))}
+          </h2>
+          <div style={{ fontSize: '1rem', color: 'var(--text-secondary)', maxWidth: '640px', margin: '0 auto' }}>
+            {t?.howItWorksSubtitle || (lang === 'mr'
+              ? 'प्रोफाइलपासून प्लेसमेंटपर्यंत, सहा सोप्या टप्प्यांत'
+              : (lang === 'hi' ? 'प्रोफ़ाइल से प्लेसमेंट तक, छह आसान चरणों में' : 'From profile to placement, in six simple steps'))}
+          </div>
         </div>
 
-        {/* 6 Steps Grid */}
         <div className="pipeline-steps-grid">
           {steps.map((step) => {
             const Icon = step.icon;
             const isActive = activeStep === step.num;
             return (
-              <div 
+              <div
                 key={step.num}
                 className={`pipeline-step-card ${isActive ? 'active' : ''}`}
                 onClick={() => setActiveStep(step.num)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter') setActiveStep(step.num); }}
-                aria-label={`Step ${step.num}: ${step.title}`}
               >
-                <div className="step-num-badge">
-                  {step.num}
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                  <Icon size={22} style={{ color: isActive ? 'var(--saffron-primary)' : 'var(--navy-deep)' }} />
-                </div>
-                <h3 className="step-title">{step.title}</h3>
-                <p className="step-desc">{step.desc}</p>
+                <div className="step-num-badge">{step.num}</div>
+                <Icon size={24} style={{ color: 'var(--saffron-primary)', marginBottom: '10px' }} />
+                <div className="step-title">{step.title}</div>
+                <div className="step-desc">{step.desc}</div>
               </div>
             );
           })}
-        </div>
-
-        {/* Active Step Highlight Card */}
-        <div style={{
-          marginTop: '32px',
-          background: '#ffffff',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '24px 32px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '20px',
-          boxShadow: 'var(--shadow-sm)',
-          flexWrap: 'wrap'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '50%',
-            background: 'var(--saffron-primary)',
-            color: '#ffffff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            fontSize: '1.2rem',
-            flexShrink: 0
-          }}>
-            {activeStep}
-          </div>
-
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--saffron-primary)', textTransform: 'uppercase' }}>
-              {(t.howPhaseDeepDive || 'Phase {num} Deep Dive: {title}').replace('{num}', activeStep).replace('{title}', steps[activeStep - 1].title)}
-            </div>
-            <div style={{ fontSize: '0.95rem', color: 'var(--navy-deep)', fontWeight: 600, marginTop: '2px' }}>
-              {steps[activeStep - 1].detail}
-            </div>
-          </div>
-
-          <button 
-            className="btn btn-outline-saffron btn-sm"
-            onClick={() => setActiveStep(activeStep === 6 ? 1 : activeStep + 1)}
-          >
-            {activeStep === 6 ? (t.howRestartCycle || "Restart Cycle") : (t.howNextPhase || "Next Phase")}
-            <ArrowRight size={14} />
-          </button>
         </div>
       </div>
     </section>

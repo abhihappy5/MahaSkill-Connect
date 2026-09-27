@@ -1,8 +1,6 @@
 export const translations = {
   en: {
     // Top Bar & Gov Branding
-    govTitle: "Government of Maharashtra",
-    deptTitle: "Department of Skills, Employment, Entrepreneurship and Innovation",
     tagline: "Skills for today. Careers for tomorrow.",
     officialPortal: "Official Skill & Labour Market Intelligence Portal",
     skipLink: "Skip to main content",
@@ -21,7 +19,6 @@ export const translations = {
     publicPlatform: "Public Platform",
     studentPortal: "Student",
     jobSeekerPortal: "Job Seeker",
-    careerRestartPortal: "Career Restart",
     govtAdminPortal: "Govt Admin",
     liveStatsBanner: "Live Data: 1,42,850+ Jobs • 36 Districts",
 
@@ -36,7 +33,6 @@ export const translations = {
     askMahaSkillAI: "Ask MahaSkill Connect",
     voiceSearchTooltip: "Click to speak (English, Marathi, Hindi)",
     listening: "Listening... speak now",
-    popularSearches: "Popular searches:",
 
     // Stats Ticker
     statJobs: "1,42,850+ Active Jobs",
@@ -118,7 +114,6 @@ export const translations = {
 
     // Student Dashboard Specific
     stuTabDashboard: "Dashboard",
-    stuTabAssessment: "Skill Assessment",
     stuTabExplorer: "Career Explorer",
     stuTabSkills: "My Skills",
     stuTabCourses: "Courses",
@@ -246,17 +241,6 @@ export const translations = {
     adminRecommendedPolicyAction: "Recommended Policy Action",
     adminDraftActionMemoBtn: "Draft State Action Memo",
 
-    // Career Restart Specific
-    restartWelcomeTitle: "Let's restart your career.",
-    restartWelcomeSub: "Tell us about your experience and goals. MahaSkill Connect will create a practical, supportive pathway back into the workforce.",
-    restartAssessmentBtn: "Start Career Restart Assessment",
-    talkToAiBtn: "Talk to AI Coach",
-    careerReadinessScoreLbl: "Career Readiness Score",
-    transferableSkillsTitle: "Transferable Skills & Transition Pathway",
-    reskillingPlanTitle: "Personalized 5-Step Reskilling Schedule",
-    applyTodayJobsTitle: "Jobs You Can Apply Today with Existing Skills",
-    unlockAfterTrainingTitle: "Jobs Unlocked After 3-Week Training",
-
     // Skill Demand Section & Interactive Map
     skillDemandTag: "Live Labour Market Intelligence",
     skillDemandTitle: "Maharashtra Regional Skill Demand & Interactive Map",
@@ -282,9 +266,6 @@ export const translations = {
     mapDemandGap: "Demand Gap",
     mapIndustrialCorridor: "Key Industrial Corridors & SEZs",
     mapDirTag: "Official Administration",
-    mapDirTitle: "Maharashtra 6 Revenue Divisions & Constituent 36 Districts Directory",
-    mapDirSubtitle: "Each division contains its official constituent districts. Click on any division card below to highlight it on the map and view live intelligence.",
-    mapConstituentDistricts: "Constituent Districts",
     mapHQ: "HQ",
     mapLiveVacancies: "Live Vacancies",
     mapIndustrialFocus: "Industrial Focus:",
@@ -349,14 +330,6 @@ export const translations = {
     howPhaseDeepDive: "Phase {num} Deep Dive: {title}",
     howRestartCycle: "Restart Cycle",
     howNextPhase: "Next Phase",
-
-    // Success Stories
-    storiesTag: "Ground Realities",
-    storiesTitle: "Career Success Stories",
-    storiesSubtitle: "Real candidates across Maharashtra who transformed their livelihoods through MahaSkill Connect guided pathways.",
-    storyVerifiedPackage: "Verified Package",
-    storyGovtVerified: "Govt Verified",
-    storyDistrictSuffix: "District",
 
     // AI Assistant Drawer
     assistantTitle: "MahaSkill Connect Assistant",
@@ -631,17 +604,6 @@ export const translations = {
     adminPlacementRate: "प्लेसमेंट प्रमाण",
     adminRecommendedPolicyAction: "सुचवलेली धोरणात्मक कृती",
     adminDraftActionMemoBtn: "राज्य कृती मसुदा तयार करा",
-
-    // Career Restart Specific (Marathi)
-    restartWelcomeTitle: "चला तुमचे करिअर पुन्हा सुरू करूया.",
-    restartWelcomeSub: "तुमचा मागील कामाचा अनुभव आणि ध्येय सांगा. महास्किल कनेक्ट तुम्हाला रोजगाराकडे नेणारा सन्मानजनक मार्ग तयार करेल.",
-    restartAssessmentBtn: "करिअर रीस्टार्ट मूल्यांकन सुरू करा",
-    talkToAiBtn: "एआय करिअर मार्गदर्शकाशी बोला",
-    careerReadinessScoreLbl: "करिअर सज्जता गुण",
-    transferableSkillsTitle: "हस्तांतरणीय कौशल्ये व संक्रमण मार्ग",
-    reskillingPlanTitle: "५-टप्प्यांची पुनर्कौशल्य योजना",
-    applyTodayJobsTitle: "सध्याच्या अनुभवावर लगेच पात्र असणाऱ्या नोकऱ्या",
-    unlockAfterTrainingTitle: "३ आठवड्यांच्या प्रशिक्षणानंतर मिळणाऱ्या नोकऱ्या",
 
     // Skill Demand Section & Interactive Map
     skillDemandTag: "थेट श्रम बाजार बुद्धिमत्ता",
@@ -1017,17 +979,6 @@ export const translations = {
     adminPlacementRate: "प्लेसमेंट दर",
     adminRecommendedPolicyAction: "अनुशंसित नीतिगत कार्रवाई",
     adminDraftActionMemoBtn: "राज्य कार्य ज्ञापन तैयार करें",
-
-    // Career Restart Specific (Hindi)
-    restartWelcomeTitle: "आइए आपका करियर फिर से शुरू करें।",
-    restartWelcomeSub: "अपना पिछला अनुभव और लक्ष्य साझा करें। महास्किल कनेक्ट कार्यबल में आपकी सम्मानजनक वापसी का मार्ग तैयार करेगा।",
-    restartAssessmentBtn: "करियर रीस्टार्ट मूल्यांकन शुरू करें",
-    talkToAiBtn: "एआई करियर सलाहकार से बात करें",
-    careerReadinessScoreLbl: "करियर तैयारी स्कोर",
-    transferableSkillsTitle: "हस्तांतरणीय कौशल एवं परिवर्तन मार्ग",
-    reskillingPlanTitle: "५-चरणीय पुनर्कौशल योजना",
-    applyTodayJobsTitle: "मौजूदा अनुभव से आज ही आवेदन करने योग्य नौकरियां",
-    unlockAfterTrainingTitle: "३ सप्ताह के प्रशिक्षण के बाद अनलॉक होने वाली नौकरियां",
 
     // Skill Demand Section & Interactive Map
     skillDemandTag: "लाइव श्रम बाजार खुफिया",

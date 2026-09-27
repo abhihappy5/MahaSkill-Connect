@@ -14,6 +14,7 @@ const TrendingCareer = require('../models/TrendingCareer');
 const EmergingSkill = require('../models/EmergingSkill');
 const FaqEntry = require('../models/FaqEntry');
 const SkillGraphEntry = require('../models/SkillGraphEntry');
+const CurriculumGap = require('../models/CurriculumGap');
 const { recomputeAndSave } = require('../utils/skillGapEngine');
 
 const { mahaCoursesData } = require('./data/raw/coursesData.js');
@@ -21,7 +22,7 @@ const { mockJobsData } = require('./data/raw/jobSeekerData.js');
 const { studentCampusJobs } = require('./data/raw/studentData.js');
 const { restartJobsToday, restartJobsUnlocked } = require('./data/raw/careerRestartData.js');
 const { successStoriesData } = require('./data/raw/successStoriesData.js');
-const { adminDistrictIntelligence } = require('./data/raw/adminDashboardData.js');
+const { adminDistrictIntelligence, curriculumGapAnalyses } = require('./data/raw/adminDashboardData.js');
 const { trendingCareersData } = require('./data/raw/careersData.js');
 const { emergingSkillsData } = require('./data/raw/emergingSkillsData.js');
 const { assistantKnowledgeBase } = require('./data/raw/faqAssistantData.js');
@@ -105,13 +106,24 @@ const mapEmergingSkill = (s) => ({
 
 const mapFaq = (lang, entries) => entries.map((e) => ({ lang, keywords: e.keywords, response: e.response }));
 
+const mapCurriculumGap = (g) => ({
+  slug: g.id,
+  occupation: g.occupation,
+  industryRequired: g.industryRequired,
+  currentCurriculum: g.currentCurriculum,
+  missingCompetencies: g.missingCompetencies,
+  evidenceCitation: g.evidenceCitation,
+  urgency: g.urgency,
+  memoAction: g.memoAction,
+});
+
 const importData = async () => {
   await connectDB();
 
   await Promise.all([
     Course.deleteMany(), Job.deleteMany(), SuccessStory.deleteMany(),
     District.deleteMany(), TrendingCareer.deleteMany(), EmergingSkill.deleteMany(), FaqEntry.deleteMany(),
-    SkillGraphEntry.deleteMany(),
+    SkillGraphEntry.deleteMany(), CurriculumGap.deleteMany(),
   ]);
 
   await Course.insertMany(mahaCoursesData.map(mapCourse));
@@ -134,6 +146,8 @@ const importData = async () => {
   const skillGraphEntries = await SkillGraphEntry.insertMany(skillGraphSeedData);
   await Promise.all(skillGraphEntries.map((e) => recomputeAndSave(e))); // populate gap/gapSeverity/recommendedAction
 
+  await CurriculumGap.insertMany(curriculumGapAnalyses.map(mapCurriculumGap));
+
   console.log('[seed] Data imported successfully');
   process.exit(0);
 };
@@ -143,7 +157,7 @@ const destroyData = async () => {
   await Promise.all([
     Course.deleteMany(), Job.deleteMany(), SuccessStory.deleteMany(),
     District.deleteMany(), TrendingCareer.deleteMany(), EmergingSkill.deleteMany(), FaqEntry.deleteMany(),
-    SkillGraphEntry.deleteMany(),
+    SkillGraphEntry.deleteMany(), CurriculumGap.deleteMany(),
   ]);
   console.log('[seed] Data destroyed');
   process.exit(0);

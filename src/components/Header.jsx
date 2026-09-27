@@ -84,7 +84,6 @@ export function Header({
   const portalsList = [
     { key: 'student', label: t.studentPortal || 'Student & Youth', icon: GraduationCap, color: '#f59e0b', desc: 'ITI trades, aptitude & college courses' },
     { key: 'dashboard', label: t.jobSeekerPortal || 'Job Seeker', icon: Briefcase, color: '#3b82f6', desc: 'AI job match & DigiLocker applications' },
-    { key: 'restart', label: t.careerRestartPortal || 'Career Restart', icon: RotateCcw, color: '#10b981', desc: 'Women returnees & reskilling cohorts' },
     { key: 'admin', label: t.govtAdminPortal || 'Govt Admin Cockpit', icon: ShieldCheck, color: '#6366f1', desc: '36 district heatmaps & labour KPIs' },
   ];
 
@@ -92,28 +91,14 @@ export function Header({
     <>
       {/* 1. Official Government Top Strip */}
       <div className="gov-top-bar" role="region" aria-label="Official Government Banner">
-        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-          
-          {/* Left: Official Gov Seal & Title */}
-          <div className="gov-brand-left" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div className="gov-emblem-mini" aria-hidden="true" style={{ width: '22px', height: '22px' }}>
-              <img 
-                src="/maharashtra_seal.svg" 
-                alt="Government of Maharashtra Official Seal" 
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              />
-            </div>
-            <span style={{ fontSize: '0.78rem', color: '#f8fafc' }}>
-              <strong>{t.govTitle || 'Government of Maharashtra'}</strong> | {t.deptTitle || 'Skill & Employment Mission'}
-            </span>
-          </div>
+        <div className="container gov-top-bar-inner">
 
-          {/* Right: Live Market Stats + Accessibility + Language Selector */}
-          <div className="gov-top-right" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            
+          {/* Live Market Stats + Accessibility + Language Selector */}
+          <div className="gov-top-right">
+
             {/* Live Stats Pill */}
-            <div style={{ display: 'none', md: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.74rem', color: '#86efac', fontWeight: 700 }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }}></span>
+            <div className="gov-live-stats-pill">
+              <span className="gov-live-dot"></span>
               <span>1,42,850+ Live Vacancies</span>
             </div>
 
@@ -212,7 +197,8 @@ export function Header({
                 {t.home}
               </button>
 
-              {/* Careers */}
+              {/* Careers (now also carries the former Courses/Emerging Skills content - see
+                  TrendingCareers.jsx which merges Emerging Skills in) */}
               <button 
                 type="button"
                 className={`nav-link ${currentView === 'home' && publicSubView === 'careers' ? 'active' : ''}`}
@@ -228,7 +214,7 @@ export function Header({
                 type="button"
                 className={`nav-link ${currentView === 'home' && publicSubView === 'courses' ? 'active' : ''}`}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, padding: '6px 10px', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '4px' }}
-                onClick={() => handlePublicNavClick('courses', 'emerging-skills')}
+                onClick={() => handlePublicNavClick('courses', 'trending-careers')}
               >
                 <BookOpen size={14} />
                 {t.findCourses || 'Courses'}
@@ -243,17 +229,6 @@ export function Header({
               >
                 <TrendingUp size={14} />
                 {t.findJobs || 'Jobs'}
-              </button>
-
-              {/* Skill Demand Map */}
-              <button 
-                type="button"
-                className={`nav-link ${currentView === 'home' && publicSubView === 'demand' ? 'active' : ''}`}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, padding: '6px 10px', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '4px' }}
-                onClick={() => handlePublicNavClick('demand', 'skill-demand-map')}
-              >
-                <MapPin size={14} />
-                {t.skillDemand || 'Demand Map'}
               </button>
 
               {/* PORTALS DROPDOWN MENU */}
@@ -350,26 +325,6 @@ export function Header({
                   </div>
                 )}
               </div>
-
-              {/* AI Assistant Pill */}
-              <button 
-                type="button"
-                className="nav-link" 
-                style={{ 
-                  background: 'rgba(255, 107, 0, 0.08)', 
-                  border: '1px solid rgba(255, 107, 0, 0.3)', 
-                  borderRadius: '20px',
-                  padding: '5px 12px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px'
-                }}
-                onClick={onOpenAssistant}
-              >
-                <Bot size={14} style={{ color: 'var(--saffron-primary)' }} />
-                <span style={{ color: 'var(--saffron-primary)', fontWeight: 800, fontSize: '0.82rem' }}>{t.aiAssistant}</span>
-              </button>
             </nav>
 
             {/* Header Actions (Login / Register) */}
@@ -433,7 +388,7 @@ export function Header({
               type="button" 
               className="btn btn-outline" 
               style={{ width: '100%', justifyContent: 'flex-start' }}
-              onClick={() => handlePublicNavClick('courses', 'emerging-skills')}
+              onClick={() => handlePublicNavClick('courses', 'trending-careers')}
             >
               <BookOpen size={15} /> {t.findCourses || 'Courses'}
             </button>
@@ -444,14 +399,6 @@ export function Header({
               onClick={() => handlePublicNavClick('jobs', '')}
             >
               <TrendingUp size={15} /> {t.findJobs || 'Jobs'}
-            </button>
-            <button 
-              type="button" 
-              className="btn btn-outline" 
-              style={{ width: '100%', justifyContent: 'flex-start' }}
-              onClick={() => handlePublicNavClick('demand', 'skill-demand-map')}
-            >
-              <MapPin size={15} /> {t.skillDemand || 'Demand Map'}
             </button>
             
             <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '10px', marginTop: '4px' }}>

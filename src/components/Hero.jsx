@@ -235,35 +235,6 @@ export function Hero({
             </div>
           )}
 
-          {/* Popular Search Tags Strip */}
-          <div className="search-tags-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '28px' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700 }}>{t.popularSearches || 'Popular:'}</span>
-            {popularChips.map((chip, idx) => (
-              <button
-                key={idx}
-                type="button"
-                className="search-tag-chip"
-                onClick={() => {
-                  setSearchQuery(chip.query);
-                  onSearchSubmit(chip.query);
-                }}
-                style={{
-                  background: '#f1f5f9',
-                  border: '1px solid #e2e8f0',
-                  color: 'var(--navy-deep)',
-                  borderRadius: '16px',
-                  padding: '3px 10px',
-                  fontSize: '0.76rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                {chip.label}
-              </button>
-            ))}
-          </div>
-
           {/* Sleek Glassmorphism Metric Strip */}
           <div 
             className="stats-ticker-strip" 

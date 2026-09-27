@@ -12,6 +12,10 @@ import { PlacementFunnelView } from './PlacementFunnelView';
 import { AiGovCopilot } from './AiGovCopilot';
 import { PanelLeftOpen } from 'lucide-react';
 
+// Same origin the rest of the app talks to the API on. Override with VITE_API_BASE_URL in .env
+// if the backend isn't proxied through the same origin as the Vite dev server.
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
   const [activeNav, setActiveNav] = useState('overview');
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
@@ -25,6 +29,11 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
   const [selectedPeriod, setSelectedPeriod] = useState('Last 12 Months (FY 2025-26)');
   const [selectedDataType, setSelectedDataType] = useState('All Metrics (Jobs/Skills/Courses/Placements)');
   const [copilotInitialQuery, setCopilotInitialQuery] = useState('');
+
+  // Result of the last "Recommend Curriculum Update" call, keyed by gap id, so
+  // CurriculumGapDetector can render a real inline status instead of a browser alert().
+  // Shape per entry: { status: 'loading' | 'success' | 'error', message, data? }
+  const [curriculumMemoState, setCurriculumMemoState] = useState({});
 
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev);
@@ -45,16 +54,53 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
         ? `${districtName} जिले के लिए कौशल विकास योजना तैयार करें`
         : `Generate a district skill plan for ${districtName}`);
     setCopilotInitialQuery(query);
-    const el = document.getElementById('admin-sec-ai-copilot');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    setActiveNav('ai-copilot');
   };
 
-  const handleRecommendCurriculumUpdate = (gapItem) => {
-    alert(lang === 'mr'
-      ? `${gapItem.occupation} साठी अधिकृत DVET मंडळ ठराव तयार केला गेला आहे.\n\nआवश्यक कौशल्ये: ${gapItem.missingCompetencies.join(', ')}.\nपुढील राज्य तांत्रिक परिषद बैठकीसाठी मसुदा पाठवला आहे.`
-      : (lang === 'hi'
-        ? `${gapItem.occupation} के लिए आधिकारिक DVET बोर्ड संकल्प तैयार किया गया है।\n\nआवश्यक क्षमताएं: ${gapItem.missingCompetencies.join(', ')}।\nअगली राज्य तकनीकी परिषद बैठक के लिए प्रस्ताव कतारबद्ध है।`
-        : `Official DVET Board Resolution Generated for ${gapItem.occupation}.\n\nMissing competencies: ${gapItem.missingCompetencies.join(', ')}.\nMemo queued for next State Technical Council meeting.`));
+  // Real backend call, replacing the old client-only alert(). Hits
+  // POST /api/admin/curriculum-gaps/:slug/recommend-update, which queues the memo server-side
+  // (persisted memoStatus/memoQueuedAt/memoHistory on the CurriculumGap document) and returns a
+  // structured payload. CurriculumGapDetector renders curriculumMemoState[gapItem.id] inline.
+  const handleRecommendCurriculumUpdate = async (gapItem) => {
+    const gapId = gapItem.id;
+    setCurriculumMemoState((prev) => ({ ...prev, [gapId]: { status: 'loading' } }));
+
+    try {
+      const res = await fetch(`${API_BASE}/admin/curriculum-gaps/${gapId}/recommend-update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // send the httpOnly JWT cookie set at login
+        body: JSON.stringify({ note: `Triggered from admin dashboard (${lang})` }),
+      });
+
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok || !json?.success) {
+        const errMessage = json?.message || `Request failed (${res.status})`;
+        setCurriculumMemoState((prev) => ({
+          ...prev,
+          [gapId]: { status: 'error', message: errMessage },
+        }));
+        return;
+      }
+
+      setCurriculumMemoState((prev) => ({
+        ...prev,
+        [gapId]: { status: 'success', message: json.data.message, data: json.data },
+      }));
+    } catch (err) {
+      setCurriculumMemoState((prev) => ({
+        ...prev,
+        [gapId]: {
+          status: 'error',
+          message: lang === 'mr'
+            ? 'सर्व्हरशी संपर्क होऊ शकला नाही. कृपया पुन्हा प्रयत्न करा.'
+            : (lang === 'hi'
+              ? 'सर्वर से संपर्क नहीं हो सका। कृपया पुनः प्रयास करें।'
+              : 'Could not reach the server. Please try again.'),
+        },
+      }));
+    }
   };
 
   const handleReallocateSeats = (districtName) => {
@@ -65,6 +111,64 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
         : `Seat Sanction Request initiated for ${districtName}.\nDraft proposal routed to Finance & Planning Department.`));
   };
 
+    // Sections without a dedicated component yet just show a placeholder instead of crashing.
+  const ComingSoon = ({ label }) => (
+    <div className="admin-section-coming-soon">
+      <h3>{label}</h3>
+      <p>{lang === 'mr' ? 'हा विभाग लवकरच उपलब्ध होईल.' : (lang === 'hi' ? 'यह सेक्शन जल्द उपलब्ध होगा.' : 'This section is coming soon.')}</p>
+    </div>
+  );
+
+  const renderActiveSection = () => {
+    switch (activeNav) {
+      case 'overview':
+        return (
+          <AdminKpiCards
+            lang={lang} t={t}
+            selectedDistrict={selectedDistrict}
+            selectedIndustry={selectedIndustry}
+            selectedPeriod={selectedPeriod}
+          />
+        );
+      case 'skill-demand-map':
+        return (
+          <AdminMapSection
+            lang={lang} t={t}
+            selectedDistrict={selectedDistrict}
+            onGeneratePlanForDistrict={handleGeneratePlanForDistrict}
+          />
+        );
+      case 'course-health':
+        return <CourseHealthTable lang={lang} t={t} selectedDistrict={selectedDistrict} />;
+      case 'curriculum-alignment':
+        return (
+          <CurriculumGapDetector
+            lang={lang} t={t}
+            memoState={curriculumMemoState}
+            onRecommendUpdate={handleRecommendCurriculumUpdate}
+          />
+        );
+      case 'training-capacity':
+        return (
+          <TrainingCapacityView
+            lang={lang} t={t}
+            selectedDistrict={selectedDistrict}
+            onReallocateSeats={handleReallocateSeats}
+          />
+        );
+      case 'employer-feedback':
+        return <EmployerSignalsView lang={lang} t={t} selectedDistrict={selectedDistrict} />;
+      case 'emerging-skills-radar':
+        return <EmergingSkillsRadar lang={lang} t={t} />;
+      case 'placement-analytics':
+        return <PlacementFunnelView lang={lang} t={t} selectedDistrict={selectedDistrict} />;
+      case 'ai-copilot':
+        return <AiGovCopilot lang={lang} t={t} initialQuery={copilotInitialQuery} />;
+      default:
+        return <ComingSoon label={activeNav} />;
+    }
+  };
+  
   return (
     <div className={`admin-layout-wrapper ${!isSidebarOpen ? 'fullscreen-mode' : ''}`}>
       {/* Mobile Drawer Backdrop */}
@@ -108,67 +212,9 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
           onToggleSidebar={toggleSidebar}
         />
 
-        {/* Dashboard Body */}
+        {/* Dashboard Body — only the active section renders now (Phase 0 fix) */}
         <div className="admin-body-content">
-          {/* 6 Main KPI Cards */}
-          <AdminKpiCards 
-            lang={lang}
-            t={t}
-          />
-
-          {/* Large Interactive Skill Demand Map & District Intelligence */}
-          <AdminMapSection 
-            onGeneratePlanForDistrict={handleGeneratePlanForDistrict}
-            lang={lang}
-            t={t}
-          />
-
-          {/* Course Health Monitor Diagnostic Table */}
-          <CourseHealthTable 
-            onSelectCourseForAudit={(course) => alert(`Inspecting audit records for ${course.name}. Annual enrollment: ${course.annualEnrollment}. Placement: ${course.placementRate}.`)}
-            lang={lang}
-            t={t}
-          />
-
-          {/* Curriculum Gap Detector */}
-          <CurriculumGapDetector 
-            onRecommendUpdate={handleRecommendCurriculumUpdate}
-            lang={lang}
-            t={t}
-          />
-
-          {/* Training Capacity & Seat Gap View */}
-          <TrainingCapacityView 
-            onReallocateSeats={handleReallocateSeats}
-            lang={lang}
-            t={t}
-          />
-
-          {/* Employer Signals & Survey Telemetry */}
-          <EmployerSignalsView 
-            lang={lang}
-            t={t}
-          />
-
-          {/* Emerging Skills Radar */}
-          <EmergingSkillsRadar 
-            lang={lang}
-            t={t}
-          />
-
-          {/* Placement Analytics & Drop-off Funnel */}
-          <PlacementFunnelView 
-            lang={lang}
-            t={t}
-          />
-
-          {/* AI Government Policy Copilot */}
-          <AiGovCopilot 
-            initialQuery={copilotInitialQuery}
-            onExportStateReport={handleExportStateReport}
-            lang={lang}
-            t={t}
-          />
+          {renderActiveSection()}
         </div>
       </div>
 

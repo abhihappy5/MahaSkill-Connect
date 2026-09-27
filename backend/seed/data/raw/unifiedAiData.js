@@ -51,32 +51,6 @@ exports.personaPrompts = {
       ]
     }
   },
-  restart: {
-    label: "Career Restart",
-    labelMr: "करिअर रीस्टार्ट",
-    labelHi: "करियर रीस्टार्ट",
-    badge: "Reskilling & Transition",
-    prompts: {
-      en: [
-        "What careers can I transition into?",
-        "What skills from my previous job are useful?",
-        "Create a reskilling plan",
-        "Find jobs I can qualify for"
-      ],
-      mr: [
-        "मी कोणत्या नव्या करिअरमध्ये जाऊ शकतो?",
-        "माझ्या जुन्या कामातील कोणती कौशल्ये उपयोगी आहेत?",
-        "पुनर्कौशल्य योजना तयार करा",
-        "मी पात्र ठरू शकणाऱ्या नोकऱ्या शोधा"
-      ],
-      hi: [
-        "मैं किन नए करियर में बदलाव कर सकता हूँ?",
-        "मेरी पिछली नौकरी के कौन से कौशल उपयोगी हैं?",
-        "रीस्किलिंग योजना बनाएं",
-        "ऐसी नौकरियां खोजें जिनके लिए मैं योग्य हूँ"
-      ]
-    }
-  },
   admin: {
     label: "Govt Admin",
     labelMr: "प्रशासक",
@@ -235,30 +209,6 @@ exports.generateStructuredAiResponse = function generateStructuredAiResponse(que
         nextActionId: "courses-ev"
       };
     }
-  }
-
-  // 3. Career Restart / Retail to Office Query
-  if (qLower.includes("restart") || qLower.includes("retail") || qLower.includes("gap") || qLower.includes("रिटेल") || qLower.includes("संक्रमण")) {
-    return {
-      text: lang === 'mr' 
-        ? "करिअर रीस्टार्ट व कौशल्यांचे हस्तांतरण विश्लेषण:"
-        : "Career restart and transferable skills diagnostic:",
-      recommendation: lang === 'mr' ? "लॉजिस्टिक्स व ऑपरेशन्स समन्वयक" : "Corporate Logistics & Operations Coordinator",
-      whyRecommended: [
-        lang === 'mr' ? "तुमचा ५ वर्षांचा ग्राहक सेवा व स्टॉक अनुभव थेट लागू होतो" : "Your 5 years of client handling & inventory transfer seamlessly",
-        lang === 'mr' ? "३ आठवड्यांचे एमएस ऑफिस व ईआरपी प्रशिक्षण पूर्ण केल्यास १००% पात्रता" : "3-week digital bridge course achieves 100% role eligibility",
-        lang === 'mr' ? "महाराष्ट्र महिला पुनर्कौशल्य योजनेअंतर्गत १००% मोफत" : "100% subsidized under Maharashtra Women Returnship initiative",
-        lang === 'mr' ? "पुणे व मुंबईमध्ये ४८०+ सक्रिय नोकऱ्या" : "480+ active openings across Pune and Mumbai MIDCs"
-      ],
-      supportingData: {
-        vacancies: "480+ Immediate Positions",
-        avgPackage: "₹3.8L - ₹6.2L LPA",
-        topDistricts: "Pune, Thane, Bhiwandi, Chhatrapati Sambhaji Nagar"
-      },
-      relevantSkills: ["Customer CRM", "SAP Inventory / Tally", "Business Communication", "Excel Pivot"],
-      nextAction: lang === 'mr' ? "रीस्टार्ट प्लॅन सुरू करा" : "Start My Career Restart Plan",
-      nextActionId: "restart-plan"
-    };
   }
 
   // 4. Admin / Policy Planning Query

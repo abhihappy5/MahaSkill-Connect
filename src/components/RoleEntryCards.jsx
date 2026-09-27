@@ -16,7 +16,6 @@ export function RoleEntryCards({
   onFindCareer, 
   onOpenStudentDashboard,
   onOpenJobSeekerDashboard,
-  onOpenCareerRestartDashboard,
   onOpenAdminDashboard
 }) {
   const cards = [
@@ -46,19 +45,7 @@ export function RoleEntryCards({
       tags: ["AI Resume Scan", "Direct MSME Jobs", "Digital Badge"],
       action: () => onOpenJobSeekerDashboard()
     },
-    {
-      id: "reskill",
-      type: "card-reskill",
-      icon: RefreshCw,
-      color: "#10b981",
-      bgColor: "#ecfdf5",
-      tag: t.reskillTag || "Career Restart",
-      title: t.reskillTitle || "Women & Reskilling Hub",
-      desc: t.reskillDesc || "Bridge career gaps with flexible returnships, mentorship & DBT stipends.",
-      cta: t.reskillCta || "Explore Returnships",
-      tags: ["Women Cohorts", "Transferable Skills", "DBT Stipends"],
-      action: () => onOpenCareerRestartDashboard()
-    },
+
     {
       id: "admin",
       type: "card-admin",

@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  LayoutDashboard, 
   Search, 
   Briefcase, 
   TrendingUp, 
@@ -9,9 +8,8 @@ import {
   Compass, 
   Bot, 
   User, 
-  Bell, 
-  ArrowLeft,
-  Globe
+  Bell,
+  Settings
 } from 'lucide-react';
 import { mockCandidateProfile } from '../../data/jobSeekerData';
 
@@ -20,13 +18,13 @@ export function DashboardHeader({
   setActiveTab, 
   onBackToHome, 
   onOpenAssistant,
+  onOpenSettings,
   lang,
   setLang
 }) {
   const getTabLabel = (key) => {
     if (lang === 'mr') {
       const mrLabels = {
-        'dashboard': 'डॅशबोर्ड',
         'find-jobs': 'नोकऱ्या शोधा',
         'applications': 'माझे अर्ज',
         'skill-gap': 'कौशल्य तफावत',
@@ -40,7 +38,6 @@ export function DashboardHeader({
     }
     if (lang === 'hi') {
       const hiLabels = {
-        'dashboard': 'डैशबोर्ड',
         'find-jobs': 'नौकरियां खोजें',
         'applications': 'मेरे आवेदन',
         'skill-gap': 'कौशल अंतर',
@@ -53,7 +50,6 @@ export function DashboardHeader({
       return hiLabels[key] || key;
     }
     const enLabels = {
-      'dashboard': 'Dashboard',
       'find-jobs': 'Find Jobs',
       'applications': 'My Applications',
       'skill-gap': 'Skill Gap',
@@ -66,8 +62,8 @@ export function DashboardHeader({
     return enLabels[key] || key;
   };
 
+  // 'dashboard' tab removed per request — Find Jobs is now the landing tab
   const tabs = [
-    { key: 'dashboard', label: getTabLabel('dashboard'), icon: LayoutDashboard },
     { key: 'find-jobs', label: getTabLabel('find-jobs'), icon: Search },
     { key: 'applications', label: getTabLabel('applications'), icon: Briefcase, count: 12 },
     { key: 'skill-gap', label: getTabLabel('skill-gap'), icon: TrendingUp },
@@ -81,44 +77,28 @@ export function DashboardHeader({
   return (
     <header className="dashboard-nav-bar" role="navigation" aria-label="Job Seeker Dashboard Navigation">
       <div className="dash-nav-container">
-        {/* Left Side: Back to Home + Portal Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <button 
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={onBackToHome}
-            title="Return to MahaSkill Portal"
-            style={{ padding: '6px 12px' }}
-          >
-            <ArrowLeft size={15} />
-            <span>{lang === 'mr' ? 'मुख्य पोर्टल' : (lang === 'hi' ? 'मुख्य पोर्टल' : 'Main Portal')}</span>
-          </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'var(--saffron-primary)',
-              color: '#ffffff',
-              fontWeight: 800,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1rem'
-            }}>
-              M
+        {/* Left Side: Brand Logo (click to return to the public homepage).
+            Reuses the same brand-logo classes as the Student Portal subnav
+            (defined in student.css, loaded globally) so both portals share
+            an identical lockup here instead of duplicating the CSS. */}
+        <button
+          type="button"
+          className="student-logo-link"
+          onClick={onBackToHome}
+          aria-label={lang === 'mr' ? 'मुख्यपृष्ठावर परत जा' : (lang === 'hi' ? 'होमपेज पर वापस जाएं' : 'Back to homepage')}
+          title={lang === 'mr' ? 'मुख्यपृष्ठावर परत जा' : (lang === 'hi' ? 'होमपेज पर वापस जाएं' : 'Back to homepage')}
+        >
+          <div className="student-logo-badge">M</div>
+          <div className="student-logo-text">
+            <div className="student-logo-brand">
+              MahaSkill <span>Connect</span>
             </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--navy-deep)', lineHeight: 1.1 }}>
-                {lang === 'mr' ? 'नोकरी शोध केंद्र' : (lang === 'hi' ? 'रोजगार केंद्र' : 'Job Seeker Hub')}
-              </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                {lang === 'mr' ? 'महाराष्ट्र शासन' : (lang === 'hi' ? 'महाराष्ट्र सरकार' : 'Government of Maharashtra')}
-              </div>
+            <div className="student-logo-tagline">
+              {lang === 'mr' ? 'आजसाठी कौशल्ये. उद्यासाठी करिअर.' : (lang === 'hi' ? 'आज के लिए कौशल। कल के लिए करियर।' : 'Skills for today. Careers for tomorrow.')}
             </div>
           </div>
-        </div>
+        </button>
 
         {/* Center: Scrollable Tabs */}
         <div className="dash-nav-links-scroll">
@@ -161,7 +141,7 @@ export function DashboardHeader({
           })}
         </div>
 
-        {/* Right Side: Notifications & User Profile */}
+        {/* Right Side: Notifications, Account Settings & Profile Avatar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {/* Notification Button */}
           <button 
@@ -184,20 +164,28 @@ export function DashboardHeader({
             }}></span>
           </button>
 
-          {/* User Profile Badge */}
-          <div className="dash-user-badge">
-            <div className="dash-user-avatar">
-              {mockCandidateProfile.avatar}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--navy-deep)', lineHeight: 1.1 }}>
-                {lang === 'mr' ? mockCandidateProfile.nameMr : (lang === 'hi' ? mockCandidateProfile.nameHi : mockCandidateProfile.name)}
-              </span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--success-dark)', fontWeight: 600 }}>
-                {mockCandidateProfile.district} • {lang === 'mr' ? 'प्रमाणित' : (lang === 'hi' ? 'सत्यापित' : 'Verified')}
-              </span>
-            </div>
-          </div>
+          {/* Account Settings Button — also where the job-search preference
+              can be edited after the first-time prompt */}
+          <button
+            type="button"
+            className="btn btn-outline btn-sm"
+            style={{ width: '34px', height: '34px', padding: 0, borderRadius: '50%' }}
+            title={lang === 'mr' ? 'खाते सेटिंग्ज' : (lang === 'hi' ? 'खाता सेटिंग्स' : 'Account Settings')}
+            onClick={onOpenSettings}
+          >
+            <Settings size={16} />
+          </button>
+
+          {/* Compact Profile Avatar — same shared style as the Student Portal */}
+          <button
+            type="button"
+            className="portal-user-avatar"
+            onClick={onOpenSettings}
+            title={lang === 'mr' ? mockCandidateProfile.nameMr : (lang === 'hi' ? mockCandidateProfile.nameHi : mockCandidateProfile.name)}
+            aria-label="Profile"
+          >
+            {mockCandidateProfile.avatar}
+          </button>
         </div>
       </div>
     </header>

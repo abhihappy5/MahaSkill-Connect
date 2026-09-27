@@ -57,6 +57,7 @@ app.use('/api/careers', require('./routes/careerRoutes'));
 app.use('/api/success-stories', require('./routes/successStoryRoutes'));
 app.use('/api/restart', require('./routes/restartRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/admin/curriculum-gaps', require('./routes/Curriculumgaproutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/employer', require('./routes/employerRoutes'));
 app.use('/api/skill-graph', require('./routes/skillGraphRoutes'));

@@ -16,8 +16,7 @@
 The platform provides a unified ecosystem serving four key stakeholders:
 1. 🏛️ **Government Policy & Administrative Officers (GovTech Admin Cockpit)**
 2. 💼 **Job Seekers & Vocational Trainees**
-3. 🌸 **Career Restart Candidates (Women Returnees & Career Transitioners)**
-4. 🎓 **Students & Young Learners**
+3. 🎓 **Students & Young Learners**
 
 ---
 
@@ -52,17 +51,6 @@ The platform provides a unified ecosystem serving four key stakeholders:
   - Clear breakdown of required credentials with direct 1-click enrolment into accredited ITI, MSBTE, and NSDC programs.
 - **1-Click Application Tracker**:
   - Track applications across *Applied, Shortlisted, Interview Scheduled, and Offer Extended* stages with DigiLocker verification badges.
-
----
-
-### 3. 🌸 Career Restart Hub (Women Empowerment & Reskilling)
-*Dedicated pathway to bring experienced women and transitioners back into Maharashtra's high-growth formal economy.*
-- **Transferable Skills Mapping**:
-  - Evaluates prior experience, breaks career gaps down into strengths, and maps adjacent modern tech/management roles.
-- **AI Career Coach & Confidence Builder**:
-  - Step-by-step personalized learning paths with flexible hours, mentorship, and returnship listings.
-- **Tailored Returnship Listings**:
-  - Remote and hybrid openings with leading Maharashtra employers committed to diversity hiring.
 
 ---
 
@@ -119,7 +107,6 @@ MahaSkill/
 │   │   │   └── TrainingCapacityView.jsx
 │   │   ├── ai/                 # AI Voice & Chatbot overlay components
 │   │   ├── dashboard/          # Job Seeker portal components
-│   │   ├── restart/            # Career Restart portal components
 │   │   ├── student/            # Student & youth explorer components
 │   │   └── public/             # Public career & course views
 │   ├── data/                   # State labor market data, translations & district profiles

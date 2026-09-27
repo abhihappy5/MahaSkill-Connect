@@ -7,12 +7,10 @@ import { SkillDemandMap } from './components/SkillDemandMap';
 import { TrendingCareers } from './components/TrendingCareers';
 import { EmergingSkills } from './components/EmergingSkills';
 import { HowItWorks } from './components/HowItWorks';
-import { SuccessStories } from './components/SuccessStories';
 import { PublicCoursesView } from './components/public/PublicCoursesView';
 import { PublicJobsView } from './components/public/PublicJobsView';
 import { StudentDashboard } from './components/student/StudentDashboard';
 import { JobSeekerDashboard } from './components/dashboard/JobSeekerDashboard';
-import { CareerRestartDashboard } from './components/restart/CareerRestartDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { UnifiedAiModal } from './components/ai/UnifiedAiModal';
 import { VoiceInteractionOverlay } from './components/ai/VoiceInteractionOverlay';
@@ -45,6 +43,11 @@ export default function App() {
   const [pathwayRolePreset, setPathwayRolePreset] = useState('');
 
   const t = translations[lang] || translations.en;
+
+  // Global site Header/Footer are hidden for 'admin' (its own integrated header) and now also
+  // for 'student' (the student portal has its own subnav directly below where the global header
+  // used to sit, so the global header/language bar was redundant on top of it).
+  const showGlobalChrome = currentView !== 'admin' && currentView !== 'student';
 
   const handleOpenAuth = (mode = 'login') => {
     setAuthMode(mode);
@@ -89,21 +92,18 @@ export default function App() {
   const handleLoginSuccess = (role) => {
     if (role === 'student') {
       setCurrentView('student');
-    } else if (role === 'candidate' || role === 'jobseeker') {
+    } else if (role === 'candidate') {
       setCurrentView('dashboard');
-    } else if (role === 'restart') {
-      setCurrentView('restart');
-    } else if (role === 'admin' || role === 'employer' || role === 'partner') {
+    } else if (role === 'admin') {
       setCurrentView('admin');
-    } else {
-      setCurrentView('dashboard');
     }
   };
 
   return (
     <div className={`app-wrapper ${lang === 'mr' || lang === 'hi' ? 'devanagari-text' : ''}`}>
-      {/* Global Header (Only displayed in public views, Admin has its own integrated header) */}
-      {currentView !== 'admin' && (
+      {/* Global Header (Public + Job Seeker + Career Restart views only. Admin has its own
+          integrated header, and Student has its own dedicated subnav — see showGlobalChrome above) */}
+      {showGlobalChrome && (
         <Header 
           lang={lang}
           setLang={setLang}
@@ -209,53 +209,6 @@ export default function App() {
                 onOpenAdminDashboard={() => setCurrentView('admin')}
               />
 
-              {/* Homepage Quick Section Navigation Pills */}
-              <div style={{
-                position: 'sticky',
-                top: '64px',
-                zIndex: 900,
-                background: 'rgba(255, 255, 255, 0.92)',
-                backdropFilter: 'blur(8px)',
-                borderBottom: '1px solid #e2e8f0',
-                padding: '8px 0',
-                marginBottom: '12px'
-              }}>
-                <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none', padding: '0 12px' }}>
-                  {[
-                    { id: 'skill-demand-map', label: t.skillDemand || 'Demand Map' },
-                    { id: 'trending-careers', label: t.trendingCareers || 'Trending Careers' },
-                    { id: 'emerging-skills', label: t.emergingSkills || 'Emerging Sectors' },
-                    { id: 'how-it-works', label: t.howItWorks || 'How It Works' },
-                    { id: 'success-stories', label: t.successStories || 'Success Stories' }
-                  ].map((sec) => (
-                    <button
-                      key={sec.id}
-                      type="button"
-                      onClick={() => {
-                        const el = document.getElementById(sec.id);
-                        if (el) el.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      style={{
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        color: 'var(--navy-deep)',
-                        padding: '4px 12px',
-                        borderRadius: '20px',
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        whiteSpace: 'nowrap',
-                        transition: 'all 0.15s ease'
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--navy-deep)'; e.currentTarget.style.color = '#ffffff'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = 'var(--navy-deep)'; }}
-                    >
-                      {sec.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Homepage Section 1: Maharashtra Skill Demand */}
               <SkillDemandMap 
                 t={t}
@@ -282,19 +235,13 @@ export default function App() {
                 t={t}
                 lang={lang}
               />
-
-              {/* Homepage Section 5: Career Success Stories */}
-              <SuccessStories 
-                t={t}
-                lang={lang}
-              />
             </>
           )}
         </main>
       )}
 
-      {/* Global Government Footer (Public views only) */}
-      {currentView !== 'admin' && (
+      {/* Global Government Footer (same views as the global header) */}
+      {showGlobalChrome && (
         <Footer 
           t={t}
           lang={lang}

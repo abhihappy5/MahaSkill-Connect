@@ -81,7 +81,6 @@ export function UnifiedAiModal({ isOpen, onClose, lang, setLang, t, initialPromp
         hi: "स्वागत है! मैं आपके कौशल का विश्लेषण कर महाराष्ट्र की १,४२,८५०+ नौकरियों से आपका मिलान कर सकता हूँ।"
       },
       restart: {
-        en: "Welcome to Career Restart AI. Tell me about your background; let's build a supportive path back into the workforce.",
         mr: "करिअर रीस्टार्ट सहाय्यकामध्ये आपले स्वागत. तुमच्या मागील अनुभवाचा वापर करून नवा रोजगार मार्ग तयार करूया.",
         hi: "करियर रीस्टार्ट में स्वागत है। आपके पिछले अनुभव के आधार पर हम एक नया रोजगार मार्ग तैयार करेंगे।"
       },
@@ -406,7 +405,6 @@ export function UnifiedAiModal({ isOpen, onClose, lang, setLang, t, initialPromp
             {[
               { id: 'student', icon: GraduationCap, label: lang === 'mr' ? 'विद्यार्थी AI' : (lang === 'hi' ? 'विद्यार्थी AI' : 'Student AI') },
               { id: 'seeker', icon: Briefcase, label: lang === 'mr' ? 'नोकरी शोधणारे AI' : (lang === 'hi' ? 'रोजगार AI' : 'Job Seeker AI') },
-              { id: 'restart', icon: RefreshCw, label: lang === 'mr' ? 'करिअर रीस्टार्ट AI' : (lang === 'hi' ? 'रीस्टार्ट AI' : 'Career Restart AI') },
               { id: 'admin', icon: Building2, label: lang === 'mr' ? 'प्रशासक AI' : (lang === 'hi' ? 'प्रशासक AI' : 'Admin AI') }
             ].map(p => {
               const Icon = p.icon;

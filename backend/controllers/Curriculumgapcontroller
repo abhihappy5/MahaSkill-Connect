@@ -1,0 +1,82 @@
+const asyncHandler = require('express-async-handler');
+const CurriculumGap = require('../models/CurriculumGap');
+
+// @desc    List all curriculum gap analyses (Curriculum Alignment admin page)
+// @route   GET /api/admin/curriculum-gaps
+// @access  Private/Admin
+const getCurriculumGaps = asyncHandler(async (req, res) => {
+  const gaps = await CurriculumGap.find().sort('-urgency');
+  res.status(200).json({ success: true, count: gaps.length, data: gaps });
+});
+
+// @desc    Get one curriculum gap analysis by slug
+// @route   GET /api/admin/curriculum-gaps/:slug
+// @access  Private/Admin
+const getCurriculumGap = asyncHandler(async (req, res) => {
+  const gap = await CurriculumGap.findOne({ slug: req.params.slug });
+  if (!gap) {
+    res.status(404);
+    throw new Error('Curriculum gap analysis not found');
+  }
+  res.status(200).json({ success: true, data: gap });
+});
+
+// @desc    Create or update a curriculum gap analysis row (admin — periodic industry-audit import)
+// @route   PUT /api/admin/curriculum-gaps/:slug
+// @access  Private/Admin
+const upsertCurriculumGap = asyncHandler(async (req, res) => {
+  const gap = await CurriculumGap.findOneAndUpdate({ slug: req.params.slug }, req.body, {
+    new: true,
+    upsert: true,
+    runValidators: true,
+    setDefaultsOnInsert: true,
+  });
+  res.status(200).json({ success: true, data: gap });
+});
+
+// @desc    "Recommend Curriculum Update" — the real backend behind what used to be a client-only
+//          alert() in AdminDashboard.jsx. Marks the gap's memo as queued for the State Technical
+//          Council and returns a structured payload (not a hardcoded string) so the frontend can
+//          render it in a real panel/toast instead of window.alert.
+// @route   POST /api/admin/curriculum-gaps/:slug/recommend-update
+// @access  Private/Admin
+const recommendCurriculumUpdate = asyncHandler(async (req, res) => {
+  const gap = await CurriculumGap.findOne({ slug: req.params.slug });
+  if (!gap) {
+    res.status(404);
+    throw new Error('Curriculum gap analysis not found');
+  }
+
+  const { note } = req.body || {};
+
+  gap.memoStatus = 'queued';
+  gap.memoQueuedAt = new Date();
+  gap.memoQueuedBy = req.user ? req.user._id : undefined;
+  gap.memoHistory.push({
+    status: 'queued',
+    note: note || 'Recommend Curriculum Update triggered from admin dashboard',
+    by: req.user ? req.user._id : undefined,
+  });
+  await gap.save();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      slug: gap.slug,
+      occupation: gap.occupation,
+      missingCompetencies: gap.missingCompetencies,
+      evidenceCitation: gap.evidenceCitation,
+      urgency: gap.urgency,
+      memoStatus: gap.memoStatus,
+      memoQueuedAt: gap.memoQueuedAt,
+      message: `Official DVET Board Resolution generated for ${gap.occupation}. Missing competencies: ${gap.missingCompetencies.join(', ')}. Memo queued for next State Technical Council meeting.`,
+    },
+  });
+});
+
+module.exports = {
+  getCurriculumGaps,
+  getCurriculumGap,
+  upsertCurriculumGap,
+  recommendCurriculumUpdate,
+};
