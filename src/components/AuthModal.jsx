@@ -13,12 +13,9 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
-  RotateCcw,
   MapPin,
   Sparkles,
-  KeyRound,
-  Check,
-  Copy
+  KeyRound
 } from 'lucide-react';
 
 export const DUMMY_USERS = {
@@ -47,19 +44,6 @@ export const DUMMY_USERS = {
     digilockerVerified: true,
     targetTrade: "EV Powertrain & Battery Diagnostics",
     enrolledCourses: 2
-  },
-  restart: {
-    name: "Priya Deshmukh",
-    email: "priya.deshmukh@restart.in",
-    phone: "9823098765",
-    role: "restart",
-    roleLabel: "Career Restart",
-    district: "Nagpur",
-    password: "password123",
-    avatar: "PD",
-    digilockerVerified: true,
-    careerBreak: "3 Years",
-    targetDomain: "Data Analytics & Quality Management"
   },
   employer: {
     name: "Tata Motors MSME Supply Hub",
@@ -97,7 +81,7 @@ const MAHARASHTRA_DISTRICTS = [
 ];
 
 export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t = {} }) {
-  const [activeTab, setActiveTab] = useState('candidate'); // 'candidate' | 'student' | 'restart' | 'employer' | 'admin'
+  const [activeTab, setActiveTab] = useState('candidate'); // 'candidate' | 'student' | 'employer' | 'admin'
   const [authMode, setAuthMode] = useState(mode); // 'login' | 'register'
   
   // Login Form States
@@ -144,7 +128,6 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
   const roles = [
     { key: 'candidate', label: 'Job Seeker', icon: User, badge: 'Job Match' },
     { key: 'student', label: 'Student', icon: GraduationCap, badge: 'ITI / Skills' },
-    { key: 'restart', label: 'Career Restart', icon: RotateCcw, badge: 'Women & Reskill' },
     { key: 'employer', label: 'Employer / MSME', icon: Building2, badge: 'Hire Talent' },
     { key: 'admin', label: 'Govt Admin', icon: ShieldCheck, badge: 'DVET Cockpit' }
   ];
@@ -568,7 +551,6 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#1e293b', marginBottom: '5px' }}>
                       {activeTab === 'candidate' ? 'Mobile No. / Aadhaar / Email' :
                        activeTab === 'student' ? 'Student PRN / Mobile / Email' :
-                       activeTab === 'restart' ? 'Registered Mobile / Email' :
                        activeTab === 'employer' ? 'Company CIN / GSTIN / Work Email' :
                        'Officer Email / Government Employee ID'}
                     </label>
@@ -876,7 +858,6 @@ export function AuthModal({ isOpen, mode = 'login', onClose, onLoginSuccess, t =
                       >
                         <option value="candidate">Job Seeker / Trainee</option>
                         <option value="student">Student / Youth</option>
-                        <option value="restart">Career Restart (Women/Reskill)</option>
                         <option value="employer">Employer / MSME</option>
                       </select>
                     </div>

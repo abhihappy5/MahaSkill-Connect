@@ -21,7 +21,7 @@ import { Bot, Sparkles, Mic } from 'lucide-react';
 
 export default function App() {
   const [lang, setLang] = useState('en'); // 'en' | 'mr' | 'hi'
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'student' | 'dashboard' | 'admin'
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'student' | 'dashboard' | 'employer' | 'admin'
   const [publicSubView, setPublicSubView] = useState('home'); // 'home' | 'careers' | 'courses' | 'jobs' | 'demand'
   const [activeSection, setActiveSection] = useState('home');
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -63,6 +63,10 @@ export default function App() {
       setCurrentView('student');
       return;
     }
+    if (rolePreset === 'employer') {
+      setCurrentView('employer');
+      return;
+    }
     if (rolePreset === 'admin') {
       setCurrentView('admin');
       return;
@@ -83,6 +87,8 @@ export default function App() {
       setCurrentView('student');
     } else if (role === 'candidate') {
       setCurrentView('dashboard');
+    } else if (role === 'employer') {
+      setCurrentView('employer');
     } else if (role === 'admin') {
       setCurrentView('admin');
     }
@@ -90,7 +96,7 @@ export default function App() {
 
   return (
     <div className={`app-wrapper ${lang === 'mr' || lang === 'hi' ? 'devanagari-text' : ''}`}>
-      {/* Global Header (public views only; Admin, Student and Job Seeker portals have their own integrated headers) */}
+      {/* Global Header (public views only; Admin, Student, Job Seeker and Employer portals have their own integrated headers) */}
       {currentView !== 'admin' && currentView !== 'student' && currentView !== 'dashboard' && currentView !== 'employer' && (
         <Header 
           lang={lang}
@@ -194,13 +200,14 @@ export default function App() {
                 onSearchSubmit={handleSearchSubmit}
               />
 
-              {/* Four Entry Cards */}
+              {/* Role Entry Cards */}
               <RoleEntryCards 
                 t={t}
                 onFindCareer={handleFindCareer}
                 onOpenAuth={handleOpenAuth}
                 onOpenStudentDashboard={() => setCurrentView('student')}
                 onOpenJobSeekerDashboard={() => setCurrentView('dashboard')}
+                onOpenEmployerPortal={() => setCurrentView('employer')}
                 onOpenAdminDashboard={() => setCurrentView('admin')}
               />
 
