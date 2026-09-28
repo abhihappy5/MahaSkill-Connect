@@ -3,16 +3,13 @@ import { translations } from './data/translations';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { RoleEntryCards } from './components/RoleEntryCards';
-import { SkillDemandMap } from './components/SkillDemandMap';
-import { TrendingCareers } from './components/TrendingCareers';
-import { EmergingSkills } from './components/EmergingSkills';
 import { HowItWorks } from './components/HowItWorks';
+import { PublicCareersView } from './components/public/PublicCareersView';
 import { PublicCoursesView } from './components/public/PublicCoursesView';
 import { PublicJobsView } from './components/public/PublicJobsView';
 import { StudentDashboard } from './components/student/StudentDashboard';
 import { JobSeekerDashboard } from './components/dashboard/JobSeekerDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
-import { EmployerPortal } from './components/employer/EmployerPortal';
 import { UnifiedAiModal } from './components/ai/UnifiedAiModal';
 import { VoiceInteractionOverlay } from './components/ai/VoiceInteractionOverlay';
 import { MobileBottomNav } from './components/ai/MobileBottomNav';
@@ -23,22 +20,12 @@ import { Bot, Sparkles, Mic } from 'lucide-react';
 
 export default function App() {
   const [lang, setLang] = useState('en'); // 'en' | 'mr' | 'hi'
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'student' | 'dashboard' | 'employer' | 'admin'
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'student' | 'dashboard' | 'admin'
   const [publicSubView, setPublicSubView] = useState('home'); // 'home' | 'careers' | 'courses' | 'jobs' | 'demand'
   const [activeSection, setActiveSection] = useState('home');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [externalFilter, setExternalFilter] = useState('');
-
-  // Active Authenticated User state
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('mahaskill_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch (e) {
-      return null;
-    }
-  });
 
   // Modals state
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -54,9 +41,6 @@ export default function App() {
   const [pathwayRolePreset, setPathwayRolePreset] = useState('');
 
   const t = translations[lang] || translations.en;
-
-  // Global site Header/Footer are hidden for 'admin', 'student', and 'employer'
-  const showGlobalChrome = currentView !== 'admin' && currentView !== 'student' && currentView !== 'employer';
 
   const handleOpenAuth = (mode = 'login') => {
     setAuthMode(mode);
@@ -78,10 +62,6 @@ export default function App() {
       setCurrentView('student');
       return;
     }
-    if (rolePreset === 'employer') {
-      setCurrentView('employer');
-      return;
-    }
     if (rolePreset === 'admin') {
       setCurrentView('admin');
       return;
@@ -92,48 +72,29 @@ export default function App() {
 
   const handleSearchSubmit = (query) => {
     setExternalFilter(query);
-    const element = document.getElementById('trending-careers');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    // Trending Careers now lives on its own page (Careers tab), not scrolled-to on the homepage.
+    setPublicSubView('careers');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleLoginSuccess = (role, user) => {
-    if (user) {
-      setCurrentUser(user);
-      localStorage.setItem('mahaskill_user', JSON.stringify(user));
-    }
+  const handleLoginSuccess = (role) => {
     if (role === 'student') {
       setCurrentView('student');
-    } else if (role === 'candidate' || role === 'jobseeker') {
+    } else if (role === 'candidate') {
       setCurrentView('dashboard');
-    } else if (role === 'restart') {
-      setCurrentView('restart');
-    } else if (role === 'admin' || role === 'employer' || role === 'partner') {
+    } else if (role === 'admin') {
       setCurrentView('admin');
-    } else {
-      setCurrentView('dashboard');
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('mahaskill_user');
-    setCurrentUser(null);
-    setCurrentView('home');
-    if (setPublicSubView) setPublicSubView('home');
   };
 
   return (
     <div className={`app-wrapper ${lang === 'mr' || lang === 'hi' ? 'devanagari-text' : ''}`}>
-      {/* Global Header (Public + Job Seeker + Career Restart views only. Admin has its own
-          integrated header, and Student has its own dedicated subnav — see showGlobalChrome above) */}
-      {showGlobalChrome && (
+      {/* Global Header (public views only; Admin, Student and Job Seeker portals have their own integrated headers) */}
+      {currentView !== 'admin' && currentView !== 'student' && currentView !== 'dashboard' && (
         <Header 
           lang={lang}
           setLang={setLang}
           t={t}
-          currentUser={currentUser}
-          onLogout={handleLogout}
           onOpenAuth={handleOpenAuth}
           onOpenAssistant={() => handleOpenAiModal('', currentView === 'student' ? 'student' : (currentView === 'dashboard' ? 'seeker' : 'student'))}
           activeSection={activeSection}
@@ -162,16 +123,6 @@ export default function App() {
           <JobSeekerDashboard 
             onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
             onOpenAssistant={(prompt) => handleOpenAiModal(prompt || 'Find jobs matching my skills', 'seeker')}
-            lang={lang}
-            setLang={setLang}
-            t={t}
-          />
-        </main>
-      ) : currentView === 'employer' ? (
-        /* ================= 4. EMPLOYER & MSME PORTAL ================= */
-        <main id="main-content">
-          <EmployerPortal 
-            onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
             lang={lang}
             setLang={setLang}
             t={t}
@@ -206,6 +157,14 @@ export default function App() {
               setLang={setLang}
               t={t}
             />
+          ) : publicSubView === 'careers' ? (
+            /* Dedicated Careers Explorer (Trending Careers + Emerging Skills) */
+            <PublicCareersView 
+              onAskAI={(prompt) => handleOpenAiModal(prompt, 'student')}
+              lang={lang}
+              t={t}
+              externalFilter={externalFilter}
+            />
           ) : (
             /* Complete Main Platform Landing Page */
             <>
@@ -230,32 +189,10 @@ export default function App() {
                 onOpenAuth={handleOpenAuth}
                 onOpenStudentDashboard={() => setCurrentView('student')}
                 onOpenJobSeekerDashboard={() => setCurrentView('dashboard')}
-                onOpenEmployerPortal={() => setCurrentView('employer')}
                 onOpenAdminDashboard={() => setCurrentView('admin')}
               />
 
-              {/* Homepage Section 1: Maharashtra Skill Demand */}
-              <SkillDemandMap 
-                t={t}
-                lang={lang}
-              />
-
-              {/* Homepage Section 2: Trending Careers */}
-              <TrendingCareers 
-                t={t}
-                lang={lang}
-                onAskAI={(prompt) => handleOpenAiModal(prompt, 'student')}
-                externalFilter={externalFilter}
-              />
-
-              {/* Homepage Section 3: Emerging Skills */}
-              <EmergingSkills 
-                t={t}
-                lang={lang}
-                onAskAI={(prompt) => handleOpenAiModal(prompt, 'student')}
-              />
-
-              {/* Homepage Section 4: How MahaSkill Connect Works */}
+              {/* Homepage Section: How MahaSkill Connect Works */}
               <HowItWorks 
                 t={t}
                 lang={lang}
@@ -265,8 +202,8 @@ export default function App() {
         </main>
       )}
 
-      {/* Global Government Footer (same views as the global header) */}
-      {showGlobalChrome && (
+      {/* Global Government Footer (Public views only) */}
+      {currentView !== 'admin' && (
         <Footer 
           t={t}
           lang={lang}
@@ -277,7 +214,7 @@ export default function App() {
       <button 
         type="button"
         className="ai-floating-trigger"
-        onClick={() => handleOpenAiModal('', currentView === 'student' ? 'student' : (currentView === 'dashboard' ? 'seeker' : (currentView === 'restart' ? 'restart' : (currentView === 'admin' ? 'admin' : 'student'))))}
+        onClick={() => handleOpenAiModal('', currentView === 'student' ? 'student' : (currentView === 'dashboard' ? 'seeker' : (currentView === 'admin' ? 'admin' : 'student')))}
         aria-label={t.askMahaSkillAI || "Ask MahaSkill Connect"}
         title={t.askMahaSkillAI || "Ask MahaSkill Connect"}
       >
