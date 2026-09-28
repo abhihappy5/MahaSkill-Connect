@@ -5,8 +5,10 @@ import { AdminKpiCards } from './AdminKpiCards';
 import { AdminMapSection } from './AdminMapSection';
 import { CourseHealthTable } from './CourseHealthTable';
 import { CurriculumGapDetector } from './CurriculumGapDetector';
+import { AssessmentModernizationView } from './AssessmentModernizationView';
 import { TrainingCapacityView } from './TrainingCapacityView';
 import { TrainerReadinessView } from './TrainerReadinessView';
+import { EquipmentPlannerView } from './EquipmentPlannerView';
 import { EmployerSignalsView } from './EmployerSignalsView';
 import { EmergingSkillsRadar } from './EmergingSkillsRadar';
 import { PlacementFunnelView } from './PlacementFunnelView';
@@ -157,6 +159,15 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
           />
         );
 
+      case 'assessment-methods':
+      case 'assessment-modernization':
+        return (
+          <AssessmentModernizationView
+            lang={lang}
+            t={t}
+          />
+        );
+
       case 'training-capacity':
         return (
           <TrainingCapacityView
@@ -170,6 +181,16 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
       case 'trainer-readiness':
         return (
           <TrainerReadinessView
+            lang={lang}
+            t={t}
+            selectedDistrict={selectedDistrict}
+          />
+        );
+
+      case 'equipment-modernization':
+      case 'equipment-readiness':
+        return (
+          <EquipmentPlannerView
             lang={lang}
             t={t}
             selectedDistrict={selectedDistrict}

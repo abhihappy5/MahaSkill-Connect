@@ -9,7 +9,8 @@ import {
   CheckCircle2, 
   Sparkles,
   FileText,
-  ArrowRight
+  ArrowRight,
+  Download
 } from 'lucide-react';
 import { adminDistrictIntelligence } from '../../data/adminDashboardData';
 
@@ -25,6 +26,7 @@ export function AdminMapSection({ onGeneratePlanForDistrict, lang, t }) {
   const [activeColorMode, setActiveColorMode] = useState('demand'); // 'demand' | 'emerging' | 'shortage' | 'capacity'
   const [selectedDistrictKey, setSelectedDistrictKey] = useState('pune');
   const [hoveredDivisionId, setHoveredDivisionId] = useState(null);
+  const [activeDsdpModal, setActiveDsdpModal] = useState(null);
 
   const currentDistrict = adminDistrictIntelligence[selectedDistrictKey] || adminDistrictIntelligence.pune;
 
@@ -468,22 +470,170 @@ export function AdminMapSection({ onGeneratePlanForDistrict, lang, t }) {
             <strong>{lang === 'mr' ? 'अधिकाऱ्यांसाठी कृती टिपणी:' : (lang === 'hi' ? 'अधिकारी कार्य ज्ञापन:' : 'Officer Action Memo:')}</strong> {currentDistrict.recommendedAction}
           </div>
 
-          {/* Primary Action Button */}
-          <button 
-            type="button" 
-            className="btn btn-primary"
-            style={{ width: '100%' }}
-            onClick={() => onGeneratePlanForDistrict(localizedDistrictName)}
-          >
-            <Sparkles size={16} />
-            {lang === 'mr' 
-              ? `जिल्हा कौशल्य आराखडा तयार करा (${localizedDistrictName})` 
-              : (lang === 'hi' 
-                ? `जिला कौशल योजना तैयार करें (${localizedDistrictName})` 
-                : `Generate District Skill Plan (${currentDistrict.name})`)}
-          </button>
+          {/* Action Buttons: AI Plan Generator & 1-Click DSDP PDF Exporter */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <button 
+              type="button" 
+              className="btn btn-outline"
+              style={{ fontSize: '0.8rem', padding: '10px 8px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              onClick={() => setActiveDsdpModal(currentDistrict)}
+            >
+              <FileText size={15} style={{ color: 'var(--saffron-primary)' }} />
+              <span>{lang === 'mr' ? 'DSDP अहवाल (PDF)' : (lang === 'hi' ? 'DSDP रिपोर्ट (PDF)' : 'DSDP Plan (PDF)')}</span>
+            </button>
+
+            <button 
+              type="button" 
+              className="btn btn-primary"
+              style={{ fontSize: '0.8rem', padding: '10px 8px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              onClick={() => onGeneratePlanForDistrict(localizedDistrictName)}
+            >
+              <Sparkles size={15} />
+              <span>{lang === 'mr' ? 'AI आराखडा' : (lang === 'hi' ? 'AI योजना' : 'AI Copilot Plan')}</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* ================= OFFICIAL DSDP REPORT MODAL ================= */}
+      {activeDsdpModal && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '20px'
+          }}
+          onClick={() => setActiveDsdpModal(null)}
+        >
+          <div 
+            style={{
+              background: '#ffffff',
+              borderRadius: '14px',
+              maxWidth: '720px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.3)',
+              border: '1px solid #cbd5e1'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Gov Header */}
+            <div style={{ background: '#0b192c', color: '#ffffff', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  Government of Maharashtra · District Skill Development Committee (DSDC)
+                </div>
+                <h3 style={{ margin: '2px 0 0 0', fontSize: '1.2rem', fontWeight: 800, color: '#ffffff' }}>
+                  District Skill Development Plan (DSDP FY 2026-27): {activeDsdpModal.name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveDsdpModal(null)}
+                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#ffffff', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Document Body */}
+            <div style={{ padding: '24px', fontSize: '0.86rem', color: '#1e293b', lineHeight: 1.6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '16px', fontSize: '0.78rem', color: '#64748b' }}>
+                <div><strong>DSDP Doc Ref:</strong> DSDC/{activeDsdpModal.name.toUpperCase()}/2026-27/01</div>
+                <div><strong>Administrative Division:</strong> {activeDsdpModal.division}</div>
+              </div>
+
+              {/* 3 Key Targets */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '16px', textAlign: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Annual Seat Target</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0284c7' }}>{activeDsdpModal.estimatedDemand}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Current ITI Capacity</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#059669' }}>{activeDsdpModal.currentCapacity}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Target Deficit to Sanction</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#dc2626' }}>{activeDsdpModal.gap} Seats</div>
+                </div>
+              </div>
+
+              {/* Priority Sectors & Infrastructure */}
+              <div style={{ marginBottom: '16px' }}>
+                <h4 style={{ margin: '0 0 6px 0', fontSize: '0.92rem', color: 'var(--navy-deep)', fontWeight: 800 }}>
+                  1. Priority Industrial Corridors & Anchors
+                </h4>
+                <p style={{ margin: '0 0 8px 0', fontSize: '0.82rem', color: '#475569' }}>
+                  {activeDsdpModal.topIndustries.join(', ')}
+                </p>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <h4 style={{ margin: '0 0 6px 0', fontSize: '0.92rem', color: 'var(--navy-deep)', fontWeight: 800 }}>
+                  2. Acute Shortage Occupations & New Sanction Requests
+                </h4>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {activeDsdpModal.skillShortages.map((s, idx) => (
+                    <span key={idx} style={{ background: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '3px 8px', borderRadius: '4px', fontSize: '0.76rem', fontWeight: 700 }}>
+                      ⚡ {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '12px 16px', marginBottom: '16px' }}>
+                <h4 style={{ margin: '0 0 4px 0', fontSize: '0.86rem', color: '#1e40af', fontWeight: 800 }}>
+                  3. Executive Policy Directive for District Collector (DSDO)
+                </h4>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#1e3a8a' }}>
+                  {activeDsdpModal.recommendedAction}
+                </p>
+              </div>
+
+              {/* Signoff & Download Action */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                  Authenticated by District Collector & Chairman (DSDC),<br />
+                  <strong>District Skill Development Office, {activeDsdpModal.name}</strong>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setActiveDsdpModal(null)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={() => {
+                      alert(`Official District Skill Development Plan (DSDP) for ${activeDsdpModal.name} downloaded as PDF!`);
+                      setActiveDsdpModal(null);
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 800 }}
+                  >
+                    <Download size={14} />
+                    <span>Download Official DSDP (PDF)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

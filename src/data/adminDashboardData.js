@@ -655,3 +655,313 @@ export const trainerReadinessData = [
   }
 ];
 
+// Equipment & Workshop Lab Modernization Dataset for Maharashtra ITIs
+export const equipmentModernizationData = [
+  {
+    id: "EQ-PUNE-01",
+    itiName: "Govt ITI Chakan",
+    district: "Pune",
+    division: "Pune Division",
+    cluster: "Chakan Auto & EV MIDC Hub",
+    tradeLab: "EV Powertrain & Battery Diagnostics",
+    criticality: "Critical Deficit",
+    currentLegacyEquipment: "Traditional IC Engine Test Rigs (2008 Vintage) — 0 EV Simulator Benches",
+    requiredModernEquipment: "2x High-Voltage Battery Pack Diagnostics & BMS Simulator Benches (Tata Motors Spec)",
+    studentsImpacted: 240,
+    estimatedCapExLakhs: 65.0,
+    csrPartner: "Tata Motors CSR & ARAI Pune",
+    csrFundedPct: 60,
+    stateBudgetPct: 40,
+    status: "Sanction Proposal Ready",
+    procurementStage: "Technical Evaluation",
+    placementImpact: "+24% in Chakan EV Corridor"
+  },
+  {
+    id: "EQ-NSK-02",
+    itiName: "Govt ITI Satpur",
+    district: "Nashik",
+    division: "Nashik Division",
+    cluster: "Satpur Engineering & Defense Hub",
+    tradeLab: "Machinist & Precision Tooling",
+    criticality: "Critical Deficit",
+    currentLegacyEquipment: "Manual 2-Axis Lathes (1998 Vintage) with High Mechanical Tolerance Deviation",
+    requiredModernEquipment: "2x 5-Axis CNC Milling Center with Siemens 840D / Fanuc CNC Simulators",
+    studentsImpacted: 320,
+    estimatedCapExLakhs: 85.0,
+    csrPartner: "Bharat Forge & HAL Skill Trust",
+    csrFundedPct: 50,
+    stateBudgetPct: 50,
+    status: "Approved for Procurement",
+    procurementStage: "GeM Tender Issued",
+    placementImpact: "+31% in Nashik Defense Tooling"
+  },
+  {
+    id: "EQ-AUR-03",
+    itiName: "Govt ITI Waluj",
+    district: "Chhatrapati Sambhaji Nagar",
+    division: "Marathwada Division",
+    cluster: "AURIC Smart City & Waluj MIDC",
+    tradeLab: "Industrial Robotics & Mechatronics",
+    criticality: "Critical Deficit",
+    currentLegacyEquipment: "Relay-only Logic Trainers (No PLC / SCADA / Pick-and-Place Robotic Arms)",
+    requiredModernEquipment: "1x 6-Axis Industrial Robotic Arm & PLC Automation Station (IGTR Spec)",
+    studentsImpacted: 180,
+    estimatedCapExLakhs: 58.0,
+    csrPartner: "Bajaj Auto CSR & Indo-German Tool Room",
+    csrFundedPct: 70,
+    stateBudgetPct: 30,
+    status: "Funding Committed",
+    procurementStage: "Site Prep & 3-Phase Power Ready",
+    placementImpact: "+28% in AURIC Smart Factory"
+  },
+  {
+    id: "EQ-NGP-04",
+    itiName: "Govt ITI Hingna",
+    district: "Nagpur",
+    division: "Nagpur Division",
+    cluster: "MIHAN SEZ & Butibori Cluster",
+    tradeLab: "Solar PV & Micro-Grid Systems",
+    criticality: "Urgent Upgrade",
+    currentLegacyEquipment: "Basic DC Breadboards — No Microgrid Hybrid Inverter Simulation Test Benches",
+    requiredModernEquipment: "3x Rooftop Solar Grid-Tied Inverter Testing Benches & Battery Storage Rig",
+    studentsImpacted: 210,
+    estimatedCapExLakhs: 36.0,
+    csrPartner: "Mahagenco Green Energy & Solar Grid Fund",
+    csrFundedPct: 40,
+    stateBudgetPct: 60,
+    status: "Sanction Proposal Ready",
+    procurementStage: "Specification Vetting",
+    placementImpact: "+19% in Vidarbha Solar Park"
+  },
+  {
+    id: "EQ-KOL-05",
+    itiName: "Govt ITI Gokul Shirgaon",
+    district: "Kolhapur",
+    division: "Pune Division",
+    cluster: "Kolhapur Foundry & Auto Ancillary",
+    tradeLab: "Foundry & Advanced Metallurgy QA",
+    criticality: "Urgent Upgrade",
+    currentLegacyEquipment: "Manual Sand Testing Rigs (No Optical Emission Spectrometer / Hardness Digital QA)",
+    requiredModernEquipment: "1x Digital Optical Emission Spectrometer & Ultrasonic Flaw Detector",
+    studentsImpacted: 160,
+    estimatedCapExLakhs: 44.0,
+    csrPartner: "Kolhapur Foundry Cluster CSR",
+    csrFundedPct: 45,
+    stateBudgetPct: 55,
+    status: "Approved for Procurement",
+    procurementStage: "GeM Tender Issued",
+    placementImpact: "+22% in Castings Export Belt"
+  },
+  {
+    id: "EQ-MMR-06",
+    itiName: "Govt ITI Thane",
+    district: "Mumbai & MMR",
+    division: "Konkan Division",
+    cluster: "Thane-Belapur Industrial Corridor",
+    tradeLab: "Chemical Plant Ops & Cold Chain",
+    criticality: "Moderate Gap",
+    currentLegacyEquipment: "Non-insulated Fluid Flow Test Pipes (Vintage 2012)",
+    requiredModernEquipment: "Automated PID Temperature Controller & Cleanroom HVAC Rig",
+    studentsImpacted: 190,
+    estimatedCapExLakhs: 32.0,
+    csrPartner: "MIDC Chemical Safety Council",
+    csrFundedPct: 50,
+    stateBudgetPct: 50,
+    status: "Under Review",
+    procurementStage: "Budget Estimate Revision",
+    placementImpact: "+15% in Pharma/Chemical Belt"
+  },
+  {
+    id: "EQ-AMR-07",
+    itiName: "Govt ITI Nandgaon",
+    district: "Amravati",
+    division: "Amravati Division",
+    cluster: "Amravati Textile Park",
+    tradeLab: "Textile Processing & Smart Looms",
+    criticality: "Urgent Upgrade",
+    currentLegacyEquipment: "Mechanical Shuttle Looms — Lacks Air-Jet & Electronic Jacquard Control",
+    requiredModernEquipment: "2x Electronic Jacquard & High-Speed Air-Jet Loom Simulator",
+    studentsImpacted: 220,
+    estimatedCapExLakhs: 48.0,
+    csrPartner: "Maharashtra Cotton Federation & PM MITRA Fund",
+    csrFundedPct: 60,
+    stateBudgetPct: 40,
+    status: "Sanction Proposal Ready",
+    procurementStage: "Technical Evaluation",
+    placementImpact: "+27% in PM MITRA Textile Mega Park"
+  },
+  {
+    id: "EQ-SOL-08",
+    itiName: "Govt ITI Solapur",
+    district: "Solapur",
+    division: "Pune Division",
+    cluster: "Solapur Solar & Garment Cluster",
+    tradeLab: "Smart Garment CAD & Automatic Cutting",
+    criticality: "Moderate Gap",
+    currentLegacyEquipment: "Manual Scissor Cutting Tables (No CNC Fabric Laser Cutter)",
+    requiredModernEquipment: "1x Automated Multi-Ply CNC Fabric Cutting & CAD Pattern Maker",
+    studentsImpacted: 280,
+    estimatedCapExLakhs: 38.0,
+    csrPartner: "Solapur Garment Manufacturers Association",
+    csrFundedPct: 50,
+    stateBudgetPct: 50,
+    status: "Approved for Procurement",
+    procurementStage: "Site Prep Ready",
+    placementImpact: "+20% in Solapur Uniform SEZ"
+  }
+];
+
+// Assessment Methods Modernization Dataset (Rote-learning Pen-Paper to Task Simulations & Jury)
+export const assessmentModernizationData = [
+  {
+    id: "ASM-EV-01",
+    trade: "EV Powertrain & Battery Diagnostics",
+    nsqfLevel: "NSQF Level 5",
+    sector: "Automotive & Electric Vehicles",
+    pilotCenters: "Govt ITI Aundh (Pune), Govt ITI Chakan, Govt ITI Waluj",
+    studentsEnrolled: 480,
+    legacyScheme: {
+      writtenTheoryPct: 70,
+      fixedPracticalPct: 30,
+      description: "3-Hour Written Pen-Paper Exam on IC engine basics & static battery formulas; single manual multimeter wiring test on de-energized board.",
+      shortcomings: "Zero fault-finding under live simulated load; cannot test CAN Bus error tracing or high-voltage safety isolation protocols."
+    },
+    modernScheme: {
+      cbtTheoryPct: 20,
+      simulationTaskPct: 35,
+      digitalLogbookPct: 25,
+      industryJuryPct: 20,
+      components: [
+        { name: "Digital E-Logbook", weight: "25%", method: "Continuous biometric log of 40 practical workshop tasks with instructor timestamp." },
+        { name: "VR / Digital Fault Simulator", weight: "35%", method: "Timed diagnosis of high-voltage BMS isolation faults & CAN bus telemetry errors." },
+        { name: "Hands-on Live Benchmark", weight: "20%", method: "Physical battery module cell balancing & thermal management circuit assembly." },
+        { name: "Industry-Jury Evaluation", weight: "20%", method: "Tata Motors / ARAI Plant Assessors evaluating workplace safety SOPs & 5S compliance." }
+      ]
+    },
+    industryEndorsement: "Tata Motors, ARAI & Mahindra Electric (98% Endorsed)",
+    employerSatisfactionScore: "4.8 / 5.0",
+    workplaceReadinessGain: "+44% faster floor integration",
+    status: "State Pilot Active (DVET Circular 88/26)"
+  },
+  {
+    id: "ASM-CNC-02",
+    trade: "5-Axis CNC Precision Machining & Tooling",
+    nsqfLevel: "NSQF Level 5",
+    sector: "Advanced Capital Goods & Defense",
+    pilotCenters: "Govt ITI Satpur (Nashik), Govt ITI Kudal, Govt ITI Karad",
+    studentsEnrolled: 620,
+    legacyScheme: {
+      writtenTheoryPct: 65,
+      fixedPracticalPct: 35,
+      description: "Pen-paper handwritten G-code memorization on answer sheet; basic manual lathe squaring operation with coarse vernier caliper.",
+      shortcomings: "Does not evaluate collision avoidance on multi-axis CAM controllers or surface roughness testing."
+    },
+    modernScheme: {
+      cbtTheoryPct: 20,
+      simulationTaskPct: 30,
+      digitalLogbookPct: 25,
+      industryJuryPct: 25,
+      components: [
+        { name: "Continuous CAM E-Logbook", weight: "25%", method: "Automated logging of 50 precision toolpath simulations in Siemens NX / Mastercam." },
+        { name: "Machine Simulator Test", weight: "30%", method: "Real-time Fanuc/Siemens controller collision check & tool offset zeroing test." },
+        { name: "Precision Tolerance Machining", weight: "25%", method: "Physical test coupon milled with tolerance verification (<0.015 mm on CMM)." },
+        { name: "Defense / OEM Jury Review", weight: "20%", method: "Bharat Forge & HAL tooling engineers evaluating ISO inspection reports." }
+      ]
+    },
+    industryEndorsement: "Bharat Forge, Godrej Aerospace & IGTR (96% Endorsed)",
+    employerSatisfactionScore: "4.9 / 5.0",
+    workplaceReadinessGain: "+38% reduction in machining scrap",
+    status: "State Pilot Active"
+  },
+  {
+    id: "ASM-SOLAR-03",
+    trade: "Solar PV & Micro-Grid Systems (Surya Mitra)",
+    nsqfLevel: "NSQF Level 4",
+    sector: "Renewable & Green Energy",
+    pilotCenters: "Govt ITI Hingna (Nagpur), Govt ITI Solapur, Govt ITI Latur",
+    studentsEnrolled: 390,
+    legacyScheme: {
+      writtenTheoryPct: 75,
+      fixedPracticalPct: 25,
+      description: "Written descriptive theory exam on photovoltaic cell physics & single manual DC circuit breadboard wiring.",
+      shortcomings: "No grid-synchronization testing, zero roof-top safety harness check, or inverter MPPT calibration assessment."
+    },
+    modernScheme: {
+      cbtTheoryPct: 20,
+      simulationTaskPct: 35,
+      digitalLogbookPct: 25,
+      industryJuryPct: 20,
+      components: [
+        { name: "Digital Installation Logbook", weight: "25%", method: "Geo-tagged photo audit of 15 rooftop test string connections." },
+        { name: "Hybrid Inverter Simulator", weight: "35%", method: "Simulated islanding detection, grid surge, and MPPT tuning under shadow conditions." },
+        { name: "Live Rooftop Mount & Earthing", weight: "20%", method: "Hands-on structural torque check, lightning arrestor and megger insulation test." },
+        { name: "DISCOM / EPC Jury Assessment", weight: "20%", method: "MSEDCL Solar Inspectors evaluating net-metering grid interconnection compliance." }
+      ]
+    },
+    industryEndorsement: "Mahagenco, Tata Power Solar & Solar EPC Council (95% Endorsed)",
+    employerSatisfactionScore: "4.7 / 5.0",
+    workplaceReadinessGain: "+32% direct hire rate",
+    status: "Approved for Statewide Rollout"
+  },
+  {
+    id: "ASM-ROBOT-04",
+    trade: "Industrial Robotics & PLC Automation Tech",
+    nsqfLevel: "NSQF Level 6",
+    sector: "Industrial Automation & Mechatronics",
+    pilotCenters: "Govt ITI Waluj, Govt ITI Bhosari (Pune), Govt ITI Thane",
+    studentsEnrolled: 310,
+    legacyScheme: {
+      writtenTheoryPct: 80,
+      fixedPracticalPct: 20,
+      description: "Pen-paper boolean logic truth tables and hand-drawn ladder diagrams without real-time PLC debugging.",
+      shortcomings: "Fails to test robot emergency e-stop interlocks, pick-and-place cycle times, or SCADA alarm handling."
+    },
+    modernScheme: {
+      cbtTheoryPct: 15,
+      simulationTaskPct: 40,
+      digitalLogbookPct: 25,
+      industryJuryPct: 20,
+      components: [
+        { name: "Digital PLC Project Portfolio", weight: "25%", method: "GitHub/E-Portfolio repository of 12 verified PLC ladder programs & HMI screens." },
+        { name: "Robotic Cell Fault Simulation", weight: "40%", method: "6-Axis arm trajectory programming, payload zeroing, and emergency recovery in 10 mins." },
+        { name: "Sensor & Actuator Calibration", weight: "15%", method: "Hardware wiring of photoelectric, inductive sensors and pneumatic valves." },
+        { name: "System Integrator Jury Review", weight: "20%", method: "ABB & Siemens automation partners auditing cycle time efficiency and safety." }
+      ]
+    },
+    industryEndorsement: "Bajaj Auto, Schneider Electric & Fanuc India (99% Endorsed)",
+    employerSatisfactionScore: "4.9 / 5.0",
+    workplaceReadinessGain: "+52% faster plant commissioning",
+    status: "State Pilot Active"
+  },
+  {
+    id: "ASM-WELD-05",
+    trade: "Advanced Welder (MIG/MAG & TIG Robotic Fabrication)",
+    nsqfLevel: "NSQF Level 4",
+    sector: "Heavy Fabrication & Infrastructure",
+    pilotCenters: "Govt ITI Gokul Shirgaon (Kolhapur), Govt ITI Butibori, Govt ITI Ambad",
+    studentsEnrolled: 540,
+    legacyScheme: {
+      writtenTheoryPct: 60,
+      fixedPracticalPct: 40,
+      description: "Visual inspection of single manual arc lap joint with basic theoretical metallurgy multiple-choice questions.",
+      shortcomings: "Zero ultrasonic flaw detection, no shielding gas flow rate calibration or radiographic test evaluation."
+    },
+    modernScheme: {
+      cbtTheoryPct: 15,
+      simulationTaskPct: 35,
+      digitalLogbookPct: 25,
+      industryJuryPct: 25,
+      components: [
+        { name: "Weld E-Logbook & WPS Audit", weight: "25%", method: "Continuous logging of 30 Welding Procedure Specifications (WPS) with gas mix ratios." },
+        { name: "VR Welding Simulator", weight: "35%", method: "Arc length, travel speed, and gun angle real-time feedback with instant bead QA score." },
+        { name: "X-Ray & NDT Coupon Test", weight: "20%", method: "Radiographic and ultrasonic non-destructive testing of T-joint penetration." },
+        { name: "L&T / Indian Institute of Welding Jury", weight: "20%", method: "IIW certified inspectors evaluating ASME/ISO compliance." }
+      ]
+    },
+    industryEndorsement: "L&T Heavy Engineering, Mazagon Dock & Thermax (97% Endorsed)",
+    employerSatisfactionScore: "4.8 / 5.0",
+    workplaceReadinessGain: "+41% first-time weld quality pass",
+    status: "State Pilot Active"
+  }
+];
+

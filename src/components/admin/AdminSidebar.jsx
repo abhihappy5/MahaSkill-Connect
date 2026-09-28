@@ -4,8 +4,10 @@ import {
   TrendingUp, 
   Activity, 
   BookOpen, 
+  ClipboardCheck,
   Layers, 
   Users,
+  Wrench,
   CheckCircle2, 
   MessageSquare, 
   Sparkles, 
@@ -32,6 +34,11 @@ export function AdminSidebar({ activeNav, setActiveNav, lang, setLang, t, isSide
       icon: BookOpen 
     },
     { 
+      key: 'assessment-methods', 
+      label: t?.adminNavAssessmentMethods || (lang === 'mr' ? 'मूल्यांकन पद्धती सुधारणा' : (lang === 'hi' ? 'मूल्यांकन पद्धति सुधार' : 'Assessment Reform Matrix')), 
+      icon: ClipboardCheck 
+    },
+    { 
       key: 'training-capacity', 
       label: t?.adminNavTrainingCapacity || (lang === 'mr' ? 'प्रशिक्षण क्षमता' : (lang === 'hi' ? 'प्रशिक्षण क्षमता' : 'Training Capacity')), 
       icon: Layers 
@@ -40,6 +47,11 @@ export function AdminSidebar({ activeNav, setActiveNav, lang, setLang, t, isSide
       key: 'trainer-readiness', 
       label: t?.adminNavTrainerReadiness || (lang === 'mr' ? 'प्रशिक्षक सज्जता' : (lang === 'hi' ? 'प्रशिक्षक तत्परता' : 'Trainer Readiness')), 
       icon: Users 
+    },
+    { 
+      key: 'equipment-modernization', 
+      label: t?.adminNavEquipmentReadiness || (lang === 'mr' ? 'प्रयोगशाळा व यंत्रसामग्री' : (lang === 'hi' ? 'प्रयोगशाला एवं उपकरण' : 'Equipment & Lab Modernization')), 
+      icon: Wrench 
     },
     { 
       key: 'placement-analytics', 
