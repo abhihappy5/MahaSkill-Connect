@@ -6,8 +6,6 @@ import {
   Sparkles, 
   GraduationCap, 
   Compass, 
-  Bot, 
-  User, 
   Bell,
   Settings
 } from 'lucide-react';
@@ -30,9 +28,7 @@ export function DashboardHeader({
         'skill-gap': 'कौशल्य तफावत',
         'recommended-skills': 'शिफारस कौशल्ये',
         'courses': 'अभ्यासक्रम',
-        'career-path': 'करिअर मार्ग',
-        'ai-assistant': 'महास्किल कनेक्ट',
-        'profile': 'प्रोफाइल'
+        'career-path': 'करिअर मार्ग'
       };
       return mrLabels[key] || key;
     }
@@ -43,9 +39,7 @@ export function DashboardHeader({
         'skill-gap': 'कौशल अंतर',
         'recommended-skills': 'सुझाए गए कौशल',
         'courses': 'पाठ्यक्रम',
-        'career-path': 'करियर पथ',
-        'ai-assistant': 'महास्किल कनेक्ट',
-        'profile': 'प्रोफाइल'
+        'career-path': 'करियर पथ'
       };
       return hiLabels[key] || key;
     }
@@ -55,9 +49,7 @@ export function DashboardHeader({
       'skill-gap': 'Skill Gap',
       'recommended-skills': 'Recommended Skills',
       'courses': 'Courses',
-      'career-path': 'Career Path',
-      'ai-assistant': 'AI Assistant',
-      'profile': 'Profile'
+      'career-path': 'Career Path'
     };
     return enLabels[key] || key;
   };
@@ -69,9 +61,7 @@ export function DashboardHeader({
     { key: 'skill-gap', label: getTabLabel('skill-gap'), icon: TrendingUp },
     { key: 'recommended-skills', label: getTabLabel('recommended-skills'), icon: Sparkles },
     { key: 'courses', label: getTabLabel('courses'), icon: GraduationCap },
-    { key: 'career-path', label: getTabLabel('career-path'), icon: Compass },
-    { key: 'ai-assistant', label: getTabLabel('ai-assistant'), icon: Bot, isSpecial: true },
-    { key: 'profile', label: getTabLabel('profile'), icon: User }
+    { key: 'career-path', label: getTabLabel('career-path'), icon: Compass }
   ];
 
   return (
@@ -111,18 +101,14 @@ export function DashboardHeader({
                 type="button"
                 className={`dash-tab-btn ${isActive ? 'active' : ''}`}
                 onClick={() => {
-                  if (t.key === 'ai-assistant') {
-                    onOpenAssistant();
-                  } else {
-                    setActiveTab(t.key);
-                    const el = document.getElementById(`section-${t.key}`);
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }
+                  setActiveTab(t.key);
+                  const el = document.getElementById(`section-${t.key}`);
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
                 role="tab"
                 aria-selected={isActive}
               >
-                <Icon size={16} style={{ color: t.isSpecial ? 'var(--saffron-primary)' : 'inherit' }} />
+                <Icon size={16} />
                 <span>{t.label}</span>
                 {t.count && (
                   <span style={{
