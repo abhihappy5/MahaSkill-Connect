@@ -7,7 +7,7 @@ import {
   GraduationCap, 
   Compass, 
   Bell,
-  Settings
+  LogOut
 } from 'lucide-react';
 import { mockCandidateProfile } from '../../data/jobSeekerData';
 
@@ -17,6 +17,7 @@ export function DashboardHeader({
   onBackToHome, 
   onOpenAssistant,
   onOpenSettings,
+  onLogout,
   lang,
   setLang
 }) {
@@ -150,18 +151,6 @@ export function DashboardHeader({
             }}></span>
           </button>
 
-          {/* Account Settings Button — also where the job-search preference
-              can be edited after the first-time prompt */}
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            style={{ width: '34px', height: '34px', padding: 0, borderRadius: '50%' }}
-            title={lang === 'mr' ? 'खाते सेटिंग्ज' : (lang === 'hi' ? 'खाता सेटिंग्स' : 'Account Settings')}
-            onClick={onOpenSettings}
-          >
-            <Settings size={16} />
-          </button>
-
           {/* Compact Profile Avatar — same shared style as the Student Portal */}
           <button
             type="button"
@@ -171,6 +160,19 @@ export function DashboardHeader({
             aria-label="Profile"
           >
             {mockCandidateProfile.avatar}
+          </button>
+
+          {/* Logout */}
+          <button
+            type="button"
+            className="btn btn-outline btn-sm"
+            onClick={onLogout}
+            title={lang === 'mr' ? 'लॉग आउट' : (lang === 'hi' ? 'लॉग आउट' : 'Logout')}
+            aria-label="Logout"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
+          >
+            <LogOut size={15} />
+            <span>{lang === 'mr' ? 'लॉग आउट' : (lang === 'hi' ? 'लॉग आउट' : 'Logout')}</span>
           </button>
         </div>
       </div>

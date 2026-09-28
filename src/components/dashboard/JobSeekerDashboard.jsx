@@ -13,6 +13,7 @@ import { mockJobsData, mockApplications } from '../../data/jobSeekerData';
 export function JobSeekerDashboard({ 
   onBackToHome, 
   onOpenAssistant, 
+  onLogout,
   lang, 
   setLang, 
   t 
@@ -154,6 +155,7 @@ export function JobSeekerDashboard({
         onBackToHome={onBackToHome}
         onOpenAssistant={onOpenAssistant}
         onOpenSettings={handleOpenSettings}
+        onLogout={onLogout}
         lang={lang}
         setLang={setLang}
       />

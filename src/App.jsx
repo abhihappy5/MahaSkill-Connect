@@ -94,6 +94,13 @@ export default function App() {
     }
   };
 
+  const handleLogout = () => {
+    try { window.localStorage.removeItem('mahaskill_user'); } catch (e) { /* ignore */ }
+    setCurrentView('home');
+    setPublicSubView('home');
+    window.scrollTo({ top: 0 });
+  };
+
   return (
     <div className={`app-wrapper ${lang === 'mr' || lang === 'hi' ? 'devanagari-text' : ''}`}>
       {/* Global Header (public views only; Admin, Student, Job Seeker and Employer portals have their own integrated headers) */}
@@ -118,6 +125,7 @@ export default function App() {
         <main id="main-content">
           <StudentDashboard 
             onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
+            onLogout={handleLogout}
             onOpenAssistant={(prompt) => handleOpenAiModal(prompt || 'What career suits me?', 'student')}
             lang={lang}
             setLang={setLang}
@@ -129,6 +137,7 @@ export default function App() {
         <main id="main-content">
           <JobSeekerDashboard 
             onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
+            onLogout={handleLogout}
             onOpenAssistant={(prompt) => handleOpenAiModal(prompt || 'Find jobs matching my skills', 'seeker')}
             lang={lang}
             setLang={setLang}
@@ -140,6 +149,7 @@ export default function App() {
         <main id="main-content">
           <EmployerPortal 
             onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
+            onLogout={handleLogout}
             onOpenAssistant={(prompt) => handleOpenAiModal(prompt || 'How do I post a job?', 'seeker')}
             lang={lang}
             setLang={setLang}
