@@ -376,3 +376,60 @@
     align-items: flex-start;
   }
 }
+/* Student portal nav: sized and styled like the old global header */
+.student-subnav {
+  top: 0;                       /* replaces the old top: 72px offset */
+  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.student-subnav-inner {
+  min-height: 76px;             /* roughly the old header's height */
+  gap: 20px;
+  padding: 0;
+}
+
+/* Tabs stretch full height so the active underline sits on the bar's bottom edge */
+.student-nav-tabs {
+  align-self: stretch;
+}
+
+.student-nav-tab {
+  font-size: 0.92rem;
+  padding: 0 18px;
+}
+
+/* Logo lockup at the same scale as the old header */
+.student-logo-badge {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  font-size: 1.4rem;
+  box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3);
+}
+
+.student-logo-badge::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.student-logo-brand {
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.student-logo-tagline {
+  font-size: 0.75rem;
+}

@@ -3,17 +3,9 @@
    ========================================================== */
 
 /* Top Government Header Strip */
-.gov-top-bar {
-  background: var(--navy-deep);
-  color: #ffffff;
-  font-size: 0.8rem;
-  padding: 6px 0;
-  border-bottom: 2px solid var(--saffron-primary);
-}
-
-.gov-top-bar .container {
+.gov-top-bar-inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
