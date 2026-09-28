@@ -10,6 +10,7 @@ import { PublicJobsView } from './components/public/PublicJobsView';
 import { StudentDashboard } from './components/student/StudentDashboard';
 import { JobSeekerDashboard } from './components/dashboard/JobSeekerDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { EmployerPortal } from './components/employer/EmployerPortal';
 import { UnifiedAiModal } from './components/ai/UnifiedAiModal';
 import { VoiceInteractionOverlay } from './components/ai/VoiceInteractionOverlay';
 import { MobileBottomNav } from './components/ai/MobileBottomNav';
@@ -90,7 +91,7 @@ export default function App() {
   return (
     <div className={`app-wrapper ${lang === 'mr' || lang === 'hi' ? 'devanagari-text' : ''}`}>
       {/* Global Header (public views only; Admin, Student and Job Seeker portals have their own integrated headers) */}
-      {currentView !== 'admin' && currentView !== 'student' && currentView !== 'dashboard' && (
+      {currentView !== 'admin' && currentView !== 'student' && currentView !== 'dashboard' && currentView !== 'employer' && (
         <Header 
           lang={lang}
           setLang={setLang}
@@ -123,6 +124,17 @@ export default function App() {
           <JobSeekerDashboard 
             onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
             onOpenAssistant={(prompt) => handleOpenAiModal(prompt || 'Find jobs matching my skills', 'seeker')}
+            lang={lang}
+            setLang={setLang}
+            t={t}
+          />
+        </main>
+      ) : currentView === 'employer' ? (
+        /* ================= 4. EMPLOYER & MSME PORTAL ================= */
+        <main id="main-content">
+          <EmployerPortal 
+            onBackToHome={() => { setCurrentView('home'); setPublicSubView('home'); }}
+            onOpenAssistant={(prompt) => handleOpenAiModal(prompt || 'How do I post a job?', 'seeker')}
             lang={lang}
             setLang={setLang}
             t={t}
