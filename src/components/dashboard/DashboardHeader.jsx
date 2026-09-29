@@ -162,17 +162,27 @@ export function DashboardHeader({
             {mockCandidateProfile.avatar}
           </button>
 
-          {/* Logout */}
+          {/* Logout — same red treatment as the Admin Cockpit's logout button */}
           <button
             type="button"
             className="btn btn-outline btn-sm"
             onClick={onLogout}
             title={lang === 'mr' ? 'लॉग आउट' : (lang === 'hi' ? 'लॉग आउट' : 'Logout')}
             aria-label="Logout"
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
+            style={{
+              padding: '6px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#dc2626',
+              borderColor: '#fca5a5',
+              background: '#fef2f2',
+              fontWeight: 700,
+              fontSize: '0.8rem'
+            }}
           >
-            <LogOut size={15} />
-            <span>{lang === 'mr' ? 'लॉग आउट' : (lang === 'hi' ? 'लॉग आउट' : 'Logout')}</span>
+            <LogOut size={14} />
+            <span>{lang === 'mr' ? 'लॉगआउट' : (lang === 'hi' ? 'लॉगआउट' : 'Logout')}</span>
           </button>
         </div>
       </div>

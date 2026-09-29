@@ -5,7 +5,8 @@ import {
   BookOpen, 
   Compass, 
   Layers, 
-  ShieldCheck
+  ShieldCheck,
+  LogOut
 } from 'lucide-react';
 import { 
   studentProfile, 
@@ -16,7 +17,7 @@ import {
 import { trendingCareersData } from '../../data/careersData';
 import { CareerPathwayModal } from '../CareerPathwayModal';
 
-export function StudentDashboard({ onBackToHome, onOpenAssistant, lang, setLang, t }) {
+export function StudentDashboard({ onBackToHome, onOpenAssistant, onLogout, lang, setLang, t }) {
   // Navigation Tabs: 'dashboard' | 'explorer' | 'skills' | 'jobs'
   // ('assessment', 'courses', 'pathway' removed per request — see AdminDashboard-style removal notes)
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -100,16 +101,39 @@ export function StudentDashboard({ onBackToHome, onOpenAssistant, lang, setLang,
               })}
             </div>
 
-            {/* Compact Profile Avatar — same shared style used in the Job Seeker portal header */}
-            <button
-              type="button"
-              className="portal-user-avatar"
-              style={{ marginLeft: 'auto' }}
-              title={studentName}
-              aria-label="Profile"
-            >
-              {studentProfile.avatar}
-            </button>
+            {/* Right side: profile avatar + Logout (same red treatment as the Admin Cockpit) */}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                type="button"
+                className="portal-user-avatar"
+                title={studentName}
+                aria-label="Profile"
+              >
+                {studentProfile.avatar}
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={onLogout}
+                title={lang === 'mr' ? 'लॉगआउट' : (lang === 'hi' ? 'लॉगआउट' : 'Logout')}
+                aria-label="Logout"
+                style={{
+                  padding: '6px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  color: '#dc2626',
+                  borderColor: '#fca5a5',
+                  background: '#fef2f2',
+                  fontWeight: 700,
+                  fontSize: '0.8rem'
+                }}
+              >
+                <LogOut size={14} />
+                <span>{lang === 'mr' ? 'लॉगआउट' : (lang === 'hi' ? 'लॉगआउट' : 'Logout')}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
