@@ -165,6 +165,9 @@ export function AdminDashboard({ onBackToHome, lang, setLang, t }) {
           <AssessmentModernizationView
             lang={lang}
             t={t}
+            district={selectedDistrict}
+            industry={selectedIndustry}
+            metric={selectedDataType}
           />
         );
 

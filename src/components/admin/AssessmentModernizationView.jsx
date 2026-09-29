@@ -1,585 +1,591 @@
-import React, { useState } from 'react';
-import { 
-  ClipboardCheck, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Sliders, 
-  Sparkles, 
-  FileText, 
-  Download, 
-  Users, 
-  Building2, 
-  ShieldCheck, 
-  TrendingUp, 
-  Layers, 
-  Cpu, 
-  Award,
-  ArrowRight,
-  Zap,
-  Check,
-  XCircle
+import React, { useRef, useState } from 'react';
+import {
+  ClipboardCheck,
+  CheckCircle2,
+  XCircle,
+  Sliders,
+  Sparkles,
+  FileText,
+  Download,
+  BadgeCheck
 } from 'lucide-react';
 import { assessmentModernizationData } from '../../data/adminDashboardData';
 
-export function AssessmentModernizationView({ lang = 'en', t }) {
-  const [selectedTradeId, setSelectedTradeId] = useState('ASM-EV-01');
-  const [sectorFilter, setSectorFilter] = useState('all');
-  
-  // Interactive Weightage Simulator State
-  const [simTheoryPct, setSimTheoryPct] = useState(20);
-  const [simSimTaskPct, setSimSimTaskPct] = useState(35);
-  const [simLogbookPct, setSimLogbookPct] = useState(25);
-  const [simJuryPct, setSimJuryPct] = useState(20);
-  
-  const [sanctionedCirculars, setSanctionedCirculars] = useState({});
-  const [activeCircularModal, setActiveCircularModal] = useState(null);
-  const [toastMessage, setToastMessage] = useState('');
+/* =====================================================================
+   Optional fields this view will show if you add them to each trade in
+   assessmentModernizationData (if missing, demo values below are used so the prototype is never empty):
+     placementRate      e.g. '62%'      (placement outcome for the trade)
+     demandGap          e.g. '+1,200'   (open demand minus trained supply)
+     employersValidated e.g. 4          (employers who signed off the scheme)
+   ===================================================================== */
 
-  const activeTrade = assessmentModernizationData.find(a => a.id === selectedTradeId) || assessmentModernizationData[0];
+/* Props (all optional): industry, district, metric = the values of the header dropdowns.
+   Pass them from the parent, e.g.
+   <AssessmentModernizationView lang={lang} industry={industryFilter} district={districtFilter} metric={metricFilter} />
+   "All ..." values (or empty) mean no filtering. */
+
+/* ---------- Palette: neutral base + orange / green accents ---------- */
+const C = {
+  ink: '#0f172a',
+  text: '#334155',
+  muted: '#64748b',
+  border: '#e2e8f0',
+  soft: '#f8fafc',
+  orange: '#c2410c',
+  orangeBg: '#fff7ed',
+  orangeLine: '#fed7aa',
+  green: '#15803d',
+  greenBg: '#f0fdf4',
+  greenLine: '#bbf7d0'
+};
+
+/* ---------- Simulator config ---------- */
+const SLIDERS = [
+  { key: 'theory',  label: '1. Computer-Based Theory Test (CBT)', hint: 'Objective fundamental concepts test',        min: 10, max: 50 },
+  { key: 'sim',     label: '2. Practical & VR Task Simulation',   hint: 'Live fault diagnosis & machine execution',   min: 20, max: 50 },
+  { key: 'logbook', label: '3. Continuous Digital E-Logbook',     hint: 'Semester-long practical job verification',   min: 15, max: 30 },
+  { key: 'jury',    label: '4. Industry-Jury On-Job Evaluation',  hint: 'Plant manager review of safety, 5S & SOPs',  min: 10, max: 30 }
+];
+const DEFAULT_WEIGHTS = { theory: 20, sim: 35, logbook: 25, jury: 20 };
+
+// Demo values (sample data) used per trade, by position, when the data file has none.
+// Replace by adding placementRate / demandGap / employersValidated to your trade data.
+const DEMO_METRICS = [
+  { placementRate: '78%', demandGap: '+1,240', employersValidated: 6 },
+  { placementRate: '71%', demandGap: '+860',   employersValidated: 4 },
+  { placementRate: '66%', demandGap: '+720',   employersValidated: 5 },
+  { placementRate: '58%', demandGap: '+430',   employersValidated: 0 },
+  { placementRate: '69%', demandGap: '+590',   employersValidated: 3 }
+];
+
+// Illustrative model only: coefficients are assumptions, not measured data.
+function computeImpact(w) {
+  return {
+    confidence: Math.min(99, Math.round(50 + w.sim * 0.6 + w.jury * 0.8 + w.logbook * 0.4 - w.theory * 0.3)),
+    roteReduction: Math.max(10, Math.round(100 - w.theory * 1.15)),
+    productivity: Math.round(15 + w.sim * 0.45 + w.jury * 0.5)
+  };
+}
+
+/* ---------- Helpers ---------- */
+const text = (lang, en, mr, hi) => (lang === 'mr' ? mr : lang === 'hi' ? hi : en);
+const num = (v) => Number(String(v ?? '').replace(/[^0-9.]/g, '')) || 0;
+
+const buildCircularRows = (c) => [
+  ['Continuous Digital E-Logbook', `${c.weights.logbook}%`, 'Biometrically verified practical job completions'],
+  ['VR / Digital Fault Simulation', `${c.weights.sim}%`, 'Timed diagnostic error tracing under dynamic load'],
+  ['Industry-Jury On-Job Assessment', `${c.weights.jury}%`, `Evaluation by OEM plant managers (${c.endorsement.split('&')[0].trim()})`],
+  ['CBT Core Theory', `${c.weights.theory}%`, 'Objective computer-based fundamental test']
+];
+
+function downloadCircularDraft(c) {
+  const rows = buildCircularRows(c)
+    .map(([a, b, d]) => `<tr><td>${a}</td><td><b>${b}</b></td><td>${d}</td></tr>`)
+    .join('');
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${c.no}</title>
+<style>body{font-family:Arial,sans-serif;max-width:720px;margin:32px auto;color:#0f172a;line-height:1.5}
+table{width:100%;border-collapse:collapse;margin:16px 0}td,th{border:1px solid #cbd5e1;padding:8px;text-align:left}
+.draft{color:#c2410c;font-weight:bold}</style></head><body>
+<p class="draft">DRAFT - PENDING APPROVAL</p>
+<h2>State Vocational Examination Reform Circular (Draft)</h2>
+<p>Government of Maharashtra - Directorate of Vocational Education &amp; Training (DVET)</p>
+<p><b>Ref:</b> ${c.no} &nbsp; <b>Date:</b> ${c.date}</p>
+<p><b>Subject:</b> Proposed transition from written examination to 4-Tier Practical Task Simulation and Industry-Jury Evaluation for ${c.trade} (${c.level}).</p>
+<table><tr><th>Component</th><th>Weightage</th><th>Methodology</th></tr>${rows}</table>
+<p>Illustrative estimate: employer confidence ${c.impact.confidence}/100, productivity +${c.impact.productivity}%.</p>
+<p>Employer validation: ${c.validated ? 'Recorded' : 'Pending'}.</p>
+<p>Pending approval by the State Board of Vocational Examination / Director, DVET, Maharashtra.</p>
+</body></html>`;
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${c.no.replace(/[\/\\]/g, '-')}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ---------- Small presentational pieces ---------- */
+function Kpi({ label, value, note, color = C.ink }) {
+  return (
+    <div style={{ background: C.soft, border: `1px solid ${C.border}`, padding: 16, borderRadius: 12 }}>
+      <div style={{ fontSize: '0.72rem', color: C.muted, textTransform: 'uppercase', fontWeight: 700 }}>{label}</div>
+      <div style={{ fontSize: '1.55rem', fontWeight: 900, color, marginTop: 2 }}>{value}</div>
+      <div style={{ fontSize: '0.74rem', color: C.text, marginTop: 4 }}>{note}</div>
+    </div>
+  );
+}
+
+function Metric({ label, value, note, color = C.ink }) {
+  return (
+    <div style={{ background: C.soft, border: `1px solid ${C.border}`, padding: '10px 14px', borderRadius: 8 }}>
+      <div style={{ fontSize: '0.76rem', color: C.text, fontWeight: 700 }}>{label}</div>
+      <div style={{ fontSize: '1.4rem', fontWeight: 900, color }}>{value}</div>
+      <div style={{ fontSize: '0.72rem', color: C.muted }}>{note}</div>
+    </div>
+  );
+}
+
+const flexRow = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 };
+
+export function AssessmentModernizationView({ lang = 'en', industry = 'all', district = 'all', metric = 'all' }) {
+  const [selectedTradeId, setSelectedTradeId] = useState(assessmentModernizationData[0].id);
+  const [weights, setWeights] = useState(DEFAULT_WEIGHTS);
+  const [proposed, setProposed] = useState({});
+  const [validated, setValidated] = useState({});
+  const [circular, setCircular] = useState(null);
+  const [toast, setToast] = useState('');
+  const simRef = useRef(null);
 
   const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 4500);
+    setToast(msg);
+    setTimeout(() => setToast(''), 4500);
   };
 
-  // Calculated Metrics from Simulator
-  const totalWeight = simTheoryPct + simSimTaskPct + simLogbookPct + simJuryPct;
-  const employerConfidence = Math.min(99, Math.round(50 + (simSimTaskPct * 0.6) + (simJuryPct * 0.8) + (simLogbookPct * 0.4) - (simTheoryPct * 0.3)));
-  const roteReductionPct = Math.max(10, Math.round(100 - simTheoryPct * 1.15));
-  const productivityGain = Math.round(15 + (simSimTaskPct * 0.45) + (simJuryPct * 0.5));
+  /* ---- Simulator (independent sliders, must total 100) ---- */
+  const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+  const isValidTotal = totalWeight === 100;
+  const impact = computeImpact(weights);
 
-  const handleQuickAdoptReform = (tradeItem) => {
-    setSanctionedCirculars(prev => ({
-      ...prev,
-      [tradeItem.id]: {
-        circularNo: `DVET/EXAM-REFORM/2026/${tradeItem.id.replace('ASM-', '')}-88`,
-        date: new Date().toLocaleDateString('en-IN'),
-        status: 'Reform Adopted for State Examination'
-      }
-    }));
+  /* ---- Data, demo fallbacks ---- */
+  const trades = assessmentModernizationData;
+  const metricOf = (a, key) => {
+    if (a[key] !== undefined && a[key] !== null) return a[key];
+    const idx = Math.max(0, trades.findIndex(x => x.id === a.id));
+    return DEMO_METRICS[idx % DEMO_METRICS.length][key];
+  };
+  const isValidated = (a) => validated[a.id] ?? num(metricOf(a, 'employersValidated')) > 0;
 
-    showToast(lang === 'mr'
-      ? `${tradeItem.trade} साठी नवीन बहुस्तरीय मूल्यांकन पद्धती लागू करण्यात आली!`
-      : (lang === 'hi'
-        ? `${tradeItem.trade} के लिए नया बहुस्तरीय मूल्यांकन ढांचा लागू किया गया!`
-        : `Modernized 4-Tier Assessment framework adopted for ${tradeItem.trade}!`));
+  /* ---- Follow the header dropdowns (industry, district, metric) ---- */
+  const isAll = (v) => !v || /^all/i.test(String(v));
+  const matchesIndustry = (a) =>
+    isAll(industry) || `${a.sector} ${a.trade}`.toLowerCase().includes(String(industry).toLowerCase());
+  const matchesDistrict = (a) =>
+    isAll(district) || String(a.pilotCenters).toLowerCase().includes(String(district).toLowerCase());
+
+  const getSort = () => {
+    if (isAll(metric)) return null;
+    const m = String(metric).toLowerCase();
+    if (m.includes('placement'))
+      return { fn: (a) => num(metricOf(a, 'placementRate')), note: 'lowest placement rate first' };
+    if (m.includes('capacity') || m.includes('deficit') || m.includes('employment') || m.includes('vacancy'))
+      return { fn: (a) => -num(metricOf(a, 'demandGap')), note: 'largest demand-supply gap first' };
+    if (m.includes('curriculum') || m.includes('course'))
+      return { fn: (a) => -num(a.legacyScheme?.writtenTheoryPct), note: 'most written-heavy scheme first' };
+    return null;
+  };
+  const sort = getSort();
+  const scopeTrades = trades.filter(a => matchesIndustry(a) && matchesDistrict(a));
+  if (sort) scopeTrades.sort((a, b) => sort.fn(a) - sort.fn(b));
+
+  const trade = scopeTrades.find(a => a.id === selectedTradeId) || scopeTrades[0];
+
+  /* ---- KPIs derived from the filtered trades (not hard-coded) ---- */
+  const avgLegacyWritten = Math.round(
+    scopeTrades.reduce((sum, a) => sum + num(a.legacyScheme?.writtenTheoryPct), 0) / (scopeTrades.length || 1)
+  );
+  const proposedPractical = 100 - weights.theory;
+  const totalCandidates = scopeTrades.reduce((sum, a) => sum + num(a.studentsEnrolled), 0);
+  const validatedCount = scopeTrades.filter(isValidated).length;
+
+  /* ---- Actions ---- */
+  const proposeAdoption = () => {
+    setProposed(prev => ({ ...prev, [trade.id]: true }));
+    showToast(text(lang,
+      `Adoption proposal submitted for ${trade.trade}. Awaiting approval.`,
+      `${trade.trade} साठी अवलंब प्रस्ताव सादर केला. मंजुरीची प्रतीक्षा.`,
+      `${trade.trade} के लिए अंगीकरण प्रस्ताव प्रस्तुत किया गया। स्वीकृति की प्रतीक्षा।`));
   };
 
-  const handleGenerateCircular = () => {
-    setActiveCircularModal({
-      circularNo: `DVET-MSDE/EXAM-MODERN/2026/CIR-${Date.now().toString().slice(-4)}`,
+  const toggleValidation = () => {
+    const next = !isValidated(trade);
+    setValidated(prev => ({ ...prev, [trade.id]: next }));
+    showToast(next
+      ? `Employer validation recorded for ${trade.trade}.`
+      : `Employer validation removed for ${trade.trade}.`);
+  };
+
+  const generateCircular = () => {
+    if (!isValidTotal) return;
+    setCircular({
+      no: `DVET-MSDE/EXAM-MODERN/2026/DRAFT-${Date.now().toString().slice(-4)}`,
       date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
-      trade: activeTrade.trade,
-      nsqfLevel: activeTrade.nsqfLevel,
-      sector: activeTrade.sector,
-      pilotCenters: activeTrade.pilotCenters,
-      theoryPct: `${simTheoryPct}%`,
-      simulationPct: `${simSimTaskPct}%`,
-      logbookPct: `${simLogbookPct}%`,
-      juryPct: `${simJuryPct}%`,
-      confidence: `${employerConfidence}/100`,
-      productivity: `+${productivityGain}%`,
-      endorsement: activeTrade.industryEndorsement
+      trade: trade.trade,
+      level: trade.nsqfLevel,
+      endorsement: trade.industryEndorsement,
+      weights: { ...weights },
+      impact,
+      validated: isValidated(trade)
     });
   };
 
+  const scrollToSimulator = () => simRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (!trade) {
+    return (
+      <div className="admin-table-card" id="admin-sec-assessment-modernization" role="region" aria-label="Assessment Methods Modernization">
+        <p style={{ color: C.muted, fontSize: '0.9rem' }}>
+          No pilot trades match the selected industry or district. Choose "All Industries" or "All 36 Districts" to see all trades.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-table-card" id="admin-sec-assessment-modernization" role="region" aria-label="Assessment Methods Modernization">
-      
-      {/* Toast Notification */}
-      {toastMessage && (
+
+      {/* Toast */}
+      {toast && (
         <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          zIndex: 9999,
-          background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-          color: '#ffffff',
-          padding: '12px 20px',
-          borderRadius: '8px',
-          boxShadow: '0 10px 25px rgba(5, 150, 105, 0.35)',
-          fontSize: '0.86rem',
-          fontWeight: 700,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          animation: 'fadeIn 0.2s ease'
+          position: 'fixed', top: 20, right: 20, zIndex: 9999,
+          background: C.green, color: '#fff', padding: '12px 20px', borderRadius: 8,
+          boxShadow: '0 10px 25px rgba(15,23,42,0.25)', fontSize: '0.86rem', fontWeight: 700,
+          display: 'flex', alignItems: 'center', gap: 8
         }}>
           <CheckCircle2 size={18} />
-          <span>{toastMessage}</span>
+          <span>{toast}</span>
         </div>
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '22px', flexWrap: 'wrap', gap: '14px' }}>
+      <div style={{ ...flexRow, marginBottom: 22, flexWrap: 'wrap', gap: 14 }}>
         <div>
-          <span className="section-tag" style={{ background: '#ecfdf5', color: '#047857', borderColor: '#a7f3d0' }}>
+          <span className="section-tag" style={{ background: C.orangeBg, color: C.orange, borderColor: C.orangeLine }}>
             <ClipboardCheck size={13} />
-            {lang === 'mr' ? 'DVET परीक्षा व मूल्यांकन पद्धती सुधारणा' : (lang === 'hi' ? 'DVET परीक्षा एवं मूल्यांकन पद्धति सुधार' : 'DVET Examination & Assessment Methods Reform')}
+            {text(lang,
+              'DVET Examination & Assessment Methods Reform',
+              'DVET परीक्षा व मूल्यांकन पद्धती सुधारणा',
+              'DVET परीक्षा एवं मूल्यांकन पद्धति सुधार')}
           </span>
-          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy-deep)', marginTop: '2px' }}>
-            {lang === 'mr' ? 'मूल्यांकन आधुनिकीकरण मॅट्रिक्स: घोकंपट्टी परीक्षा ते प्रत्यक्ष कार्य सिम्युलेशन' : (lang === 'hi' ? 'मूल्यांकन आधुनिकीकरण मैट्रिक्स: रट्टा परीक्षा से व्यावहारिक कार्य सिमुलेशन' : 'Assessment Modernization Matrix: Rote-Learning to Task Simulations & Jury')}
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy-deep)', marginTop: 2 }}>
+            {text(lang,
+              'Assessment Modernization Matrix: Rote-Learning to Task Simulations & Jury',
+              'मूल्यांकन आधुनिकीकरण मॅट्रिक्स: घोकंपट्टी परीक्षा ते प्रत्यक्ष कार्य सिम्युलेशन',
+              'मूल्यांकन आधुनिकीकरण मैट्रिक्स: रट्टा परीक्षा से व्यावहारिक कार्य सिमुलेशन')}
           </h2>
-          <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
-            {lang === 'mr'
-              ? '८०% लेखी पेन-पेपर घोकंपट्टी परीक्षा बंद करून प्रत्यक्ष टास्क सिम्युलेशन, डिजिटल ई-लॉगबुक आणि उद्योग प्रतिनिधी मूल्यांकनाचा अवलंब.'
-              : 'Transitioning from 80% written rote-learning exams to Practical Task Simulations, Continuous Digital Logbooks, and Industry-Jury On-Job Evaluations.'}
+          <p style={{ fontSize: '0.82rem', color: C.muted, margin: '4px 0 0 0' }}>
+            {text(lang,
+              `Moving from ~${avgLegacyWritten}% written rote-learning exams to practical task simulations, continuous digital logbooks and industry-jury on-job evaluations.`,
+              'लेखी घोकंपट्टी परीक्षेऐवजी प्रत्यक्ष टास्क सिम्युलेशन, डिजिटल ई-लॉगबुक आणि उद्योग प्रतिनिधी मूल्यांकनाचा अवलंब.',
+              'लिखित रट्टा परीक्षा की जगह व्यावहारिक सिमुलेशन, डिजिटल ई-लॉगबुक और उद्योग जूरी मूल्यांकन।')}
           </p>
         </div>
 
-        <button
-          type="button"
-          className="btn btn-primary btn-sm"
-          onClick={handleGenerateCircular}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800 }}
-        >
+        <button type="button" className="btn btn-primary btn-sm" onClick={scrollToSimulator}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800 }}>
           <Sliders size={14} />
-          <span>{lang === 'mr' ? 'मूल्यांकन नियमक सिम्युलेटर' : (lang === 'hi' ? 'मूल्यांकन नियामक सिम्युलेटर' : 'Assessment Reform Simulator')}</span>
+          <span>{text(lang, 'Assessment Reform Simulator', 'मूल्यांकन नियमक सिम्युलेटर', 'मूल्यांकन नियामक सिम्युलेटर')}</span>
         </button>
       </div>
 
-      {/* 4 Reform KPI Diagnostic Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px', marginBottom: '24px' }}>
-        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '16px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '0.72rem', color: '#991b1b', textTransform: 'uppercase', fontWeight: 700 }}>Legacy Assessment Defect</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 900, color: '#dc2626', marginTop: '2px' }}>70% Written Exam</div>
-          <div style={{ fontSize: '0.72rem', color: '#b91c1c', marginTop: '4px' }}>Pen-paper memory tests fail practical factory readiness</div>
-        </div>
-
-        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '16px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '0.72rem', color: '#166534', textTransform: 'uppercase', fontWeight: 700 }}>Modern Hands-On Standard</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 900, color: '#059669', marginTop: '2px' }}>80% Practical / Sim</div>
-          <div style={{ fontSize: '0.72rem', color: '#15803d', marginTop: '4px' }}>Simulations, E-Logbook & Industry Jury Evaluation</div>
-        </div>
-
-        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '16px', borderRadius: '12px' }}>
-          <div style={{ fontSize: '0.72rem', color: '#1e40af', textTransform: 'uppercase', fontWeight: 700 }}>Employer Endorsement</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 900, color: '#0284c7', marginTop: '2px' }}>97.2% Industry Fit</div>
-          <div style={{ fontSize: '0.72rem', color: '#1d4ed8', marginTop: '4px' }}>Tata Motors, Bharat Forge, Bajaj Auto, Schneider</div>
-        </div>
-
-        <div style={{ background: 'linear-gradient(135deg, #0b192c 0%, #1e293b 100%)', color: '#ffffff', padding: '16px', borderRadius: '12px', border: '1px solid #334155' }}>
-          <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Candidate Onboarding Speed</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 900, color: '#f8fafc', marginTop: '2px' }}>+41% Faster</div>
-          <div style={{ fontSize: '0.72rem', color: '#4ade80', marginTop: '4px' }}>Graduates job-ready from Day 1 without retraining</div>
-        </div>
+      {/* KPI cards (derived from data) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 14, marginBottom: 24 }}>
+        <Kpi label="Legacy Written Share (avg)" value={`${avgLegacyWritten}% Written`} color={C.orange}
+             note={`Average across ${scopeTrades.length} pilot trade${scopeTrades.length === 1 ? '' : 's'}`} />
+        <Kpi label="Proposed Practical Share" value={`${proposedPractical}% Practical / Sim`} color={C.green}
+             note="Simulation, e-logbook & industry jury (from simulator)" />
+        <Kpi label="Candidates Covered" value={totalCandidates.toLocaleString('en-IN')}
+             note="Candidates per year across pilot trades" />
+        <Kpi label="Employer-Validated Trades" value={`${validatedCount} of ${scopeTrades.length}`}
+             note="Trades where employers signed off the new scheme" />
       </div>
 
-      {/* Trade Selector Tabs */}
-      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '18px' }}>
-        {assessmentModernizationData.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setSelectedTradeId(item.id)}
-            style={{
-              padding: '8px 14px',
-              borderRadius: '8px',
-              border: selectedTradeId === item.id ? '2px solid #0284c7' : '1px solid #cbd5e1',
-              background: selectedTradeId === item.id ? '#eff6ff' : '#ffffff',
-              color: selectedTradeId === item.id ? '#1e40af' : '#475569',
-              fontWeight: 700,
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <span>{item.trade}</span>
-            <span style={{ fontSize: '0.68rem', padding: '1px 5px', borderRadius: '4px', background: selectedTradeId === item.id ? '#bfdbfe' : '#f1f5f9', color: '#1e293b' }}>
-              {item.nsqfLevel}
-            </span>
-          </button>
-        ))}
+      {/* Trade tabs (follow the header dropdowns) */}
+      <div style={{ fontSize: '0.78rem', color: C.muted, marginBottom: 8 }}>
+        Showing {scopeTrades.length} of {trades.length} pilot trades{sort ? ` · sorted by ${sort.note}` : ''}
+      </div>
+      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 10, marginBottom: 18 }}>
+        {scopeTrades.map((item) => {
+          const active = trade.id === item.id;
+          return (
+            <button key={item.id} type="button" onClick={() => setSelectedTradeId(item.id)}
+              style={{
+                padding: '8px 14px', borderRadius: 8, cursor: 'pointer', whiteSpace: 'nowrap',
+                fontWeight: 700, fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 6,
+                border: active ? `2px solid ${C.green}` : '1px solid #cbd5e1',
+                background: active ? C.greenBg : '#fff',
+                color: active ? '#166534' : '#475569'
+              }}>
+              <span>{item.trade}</span>
+              <span style={{ fontSize: '0.68rem', padding: '1px 5px', borderRadius: 4, background: active ? C.greenLine : '#f1f5f9', color: '#1e293b' }}>
+                {item.nsqfLevel}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Active Trade Assessment Detail Card: Legacy vs Modern Comparison */}
-      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', marginBottom: '28px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
+      {/* Active trade: legacy vs modern */}
+      <div style={{ background: '#fff', border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 28, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10, marginBottom: 16 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.74rem', background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                {activeTrade.id}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: '0.74rem', background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: 4, fontWeight: 700 }}>
+                {trade.id}
               </span>
-              <span style={{ fontSize: '0.74rem', background: '#ecfdf5', color: '#047857', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                ● {activeTrade.status}
+              <span style={{ fontSize: '0.74rem', background: '#f1f5f9', color: C.text, padding: '2px 8px', borderRadius: 4, fontWeight: 700 }}>
+                ● {trade.status}
               </span>
+              {isValidated(trade) && (
+                <span style={{ fontSize: '0.74rem', background: C.greenBg, color: C.green, border: `1px solid ${C.greenLine}`, padding: '2px 8px', borderRadius: 4, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <BadgeCheck size={12} /> Employer validated
+                </span>
+              )}
             </div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--navy-deep)', margin: '4px 0 2px 0' }}>
-              {activeTrade.trade} ({activeTrade.nsqfLevel})
+              {trade.trade} ({trade.nsqfLevel})
             </h3>
-            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-              Sector: <strong>{activeTrade.sector}</strong> · Pilot Centers: <strong>{activeTrade.pilotCenters}</strong> (👥 {activeTrade.studentsEnrolled} candidates/yr)
+            <div style={{ fontSize: '0.78rem', color: C.muted }}>
+              Sector: <strong>{trade.sector}</strong> · Pilot Centers: <strong>{trade.pilotCenters}</strong> ({trade.studentsEnrolled} candidates/yr)
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#059669', background: '#f0fdf4', padding: '4px 10px', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
-              🏆 {activeTrade.employerSatisfactionScore} Industry Rating
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: C.green, background: C.greenBg, padding: '4px 10px', borderRadius: 6, border: `1px solid ${C.greenLine}` }}>
+              {trade.employerSatisfactionScore} Industry Rating
             </span>
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              onClick={() => handleQuickAdoptReform(activeTrade)}
-              style={{ fontWeight: 800, fontSize: '0.78rem' }}
-            >
-              {sanctionedCirculars[activeTrade.id] ? 'Reform Circular Active ✓' : 'Adopt Reformed Assessment (Statewide)'}
+            <button type="button" className="btn btn-outline btn-sm" onClick={toggleValidation} style={{ fontWeight: 800, fontSize: '0.78rem' }}>
+              {isValidated(trade) ? 'Undo Employer Validation' : 'Record Employer Validation'}
+            </button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={proposeAdoption}
+              disabled={proposed[trade.id]} style={{ fontWeight: 800, fontSize: '0.78rem' }}>
+              {proposed[trade.id] ? 'Proposal Submitted ✓' : 'Propose Statewide Adoption'}
             </button>
           </div>
         </div>
 
-        {/* Side-by-Side Comparison Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
-          
-          {/* Legacy Scheme Box */}
-          <div style={{ background: '#fff5f5', border: '1px solid #fecaca', borderRadius: '10px', padding: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#991b1b', fontWeight: 800, fontSize: '0.86rem' }}>
+        {/* Mismatch indicators: ties assessment reform to demand/placement */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10, marginBottom: 16 }}>
+          {[
+            ['Placement rate', metricOf(trade, 'placementRate'), C.green, 'Last 12 months'],
+            ['Demand-supply gap', metricOf(trade, 'demandGap'), C.orange, 'Open jobs minus trained supply'],
+            ['Employers validated', isValidated(trade) ? Math.max(1, num(metricOf(trade, 'employersValidated'))) : 0, C.green, 'Signed off this scheme']
+          ].map(([label, value, color, note]) => (
+            <div key={label} style={{ background: C.soft, border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 12px' }}>
+              <div style={{ fontSize: '0.7rem', color: C.muted, textTransform: 'uppercase', fontWeight: 700 }}>{label}</div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 800, color }}>{value}</div>
+              <div style={{ fontSize: '0.7rem', color: C.muted }}>{note}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 }}>
+          {/* Legacy */}
+          <div style={{ background: C.soft, border: `1px solid ${C.border}`, borderRadius: 10, padding: 16 }}>
+            <div style={{ ...flexRow, marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: C.orange, fontWeight: 800, fontSize: '0.86rem' }}>
                 <XCircle size={16} />
                 <span>Legacy Evaluation Scheme (Obsolescent)</span>
               </div>
-              <span style={{ fontSize: '0.72rem', background: '#fee2e2', color: '#dc2626', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                {activeTrade.legacyScheme.writtenTheoryPct}% Written / {activeTrade.legacyScheme.fixedPracticalPct}% Practical
+              <span style={{ fontSize: '0.72rem', background: '#ffedd5', color: C.orange, padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>
+                {trade.legacyScheme.writtenTheoryPct}% Written / {trade.legacyScheme.fixedPracticalPct}% Practical
               </span>
             </div>
-
-            <p style={{ fontSize: '0.8rem', color: '#334155', margin: '0 0 10px 0', lineHeight: 1.45 }}>
-              {activeTrade.legacyScheme.description}
+            <p style={{ fontSize: '0.8rem', color: C.text, margin: '0 0 10px 0', lineHeight: 1.45 }}>
+              {trade.legacyScheme.description}
             </p>
-
-            <div style={{ background: 'rgba(220, 38, 38, 0.08)', borderLeft: '3px solid #dc2626', padding: '8px 12px', borderRadius: '0 6px 6px 0', fontSize: '0.76rem', color: '#991b1b' }}>
-              <strong>Critical Deficiency:</strong> {activeTrade.legacyScheme.shortcomings}
+            <div style={{ background: C.orangeBg, borderLeft: '3px solid #ea580c', padding: '8px 12px', borderRadius: '0 6px 6px 0', fontSize: '0.76rem', color: '#7c2d12' }}>
+              <strong>Critical Deficiency:</strong> {trade.legacyScheme.shortcomings}
             </div>
           </div>
 
-          {/* Modern 4-Tier Scheme Box */}
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#166534', fontWeight: 800, fontSize: '0.86rem' }}>
+          {/* Modern */}
+          <div style={{ background: C.soft, border: '1px solid #cbd5e1', borderRadius: 10, padding: 16 }}>
+            <div style={{ ...flexRow, marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: C.green, fontWeight: 800, fontSize: '0.86rem' }}>
                 <CheckCircle2 size={16} />
                 <span>Reformed 4-Tier Practical Assessment Framework</span>
               </div>
-              <span style={{ fontSize: '0.72rem', background: '#dcfce7', color: '#15803d', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                80% Hands-On & Simulation
+              <span style={{ fontSize: '0.72rem', background: '#dcfce7', color: '#166534', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>
+                Hands-On & Simulation
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '10px' }}>
-              {activeTrade.modernScheme.components.map((comp, cIdx) => (
-                <div key={cIdx} style={{ background: '#ffffff', border: '1px solid #dcfce7', borderRadius: '6px', padding: '6px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', fontSize: '0.78rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
+              {trade.modernScheme.components.map((comp, i) => (
+                <div key={i} style={{ background: '#fff', border: `1px solid ${C.border}`, borderRadius: 6, padding: '6px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, fontSize: '0.78rem' }}>
                   <div>
                     <strong style={{ color: 'var(--navy-deep)' }}>{comp.name}:</strong>
-                    <span style={{ color: '#475569', marginLeft: '4px' }}>{comp.method}</span>
+                    <span style={{ color: '#475569', marginLeft: 4 }}>{comp.method}</span>
                   </div>
-                  <span style={{ fontWeight: 800, color: '#059669', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px', border: '1px solid #bbf7d0', flexShrink: 0 }}>
+                  <span style={{ fontWeight: 800, color: C.green, background: C.greenBg, padding: '1px 6px', borderRadius: 4, border: `1px solid ${C.greenLine}`, flexShrink: 0 }}>
                     {comp.weight}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div style={{ marginTop: '10px', fontSize: '0.74rem', color: '#15803d', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>🤝 Endorsement: <strong>{activeTrade.industryEndorsement}</strong></span>
-              <span>⚡ <strong>{activeTrade.workplaceReadinessGain}</strong></span>
+            <div style={{ marginTop: 10, fontSize: '0.74rem', color: '#475569', ...flexRow }}>
+              <span>Endorsement: <strong>{trade.industryEndorsement}</strong></span>
+              <span><strong>{trade.workplaceReadinessGain}</strong></span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ================= POLICY REFORM WEIGHTAGE SIMULATOR ================= */}
-      <div style={{
-        background: 'linear-gradient(135deg, #0b192c 0%, #1e3a8a 100%)',
-        color: '#ffffff',
-        borderRadius: '16px',
-        padding: '24px',
-        boxShadow: '0 10px 30px rgba(11, 25, 44, 0.25)',
-        border: '1px solid #334155'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-          <Sparkles size={22} style={{ color: '#fbbf24' }} />
+      {/* ================= WEIGHTAGE SIMULATOR ================= */}
+      <div ref={simRef} style={{ background: C.soft, color: C.ink, borderRadius: 16, padding: 24, border: `1px solid ${C.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+          <Sparkles size={22} style={{ color: '#ea580c' }} />
           <div>
-            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>
+            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: C.ink }}>
               Statewide Assessment Weightage Policy Simulator
             </h3>
-            <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#cbd5e1' }}>
-              Adjust evaluation weightages to observe the direct impact on employer confidence, rote-learning elimination, and candidate job-readiness.
+            <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: C.muted }}>
+              Adjust weightages to see the estimated effect on employer confidence and job-readiness. Total must equal 100%.
             </p>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-          
-          {/* Sliders Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            
-            {/* Slider 1: Theory CBT */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', fontWeight: 700, marginBottom: '4px' }}>
-                <span style={{ color: '#93c5fd' }}>1. Computer-Based Theory Test (CBT):</span>
-                <span style={{ color: '#93c5fd' }}>{simTheoryPct}%</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+          {/* Sliders */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {SLIDERS.map((s) => (
+              <div key={s.key}>
+                <div style={{ ...flexRow, fontSize: '0.78rem', fontWeight: 700, marginBottom: 4, color: C.text }}>
+                  <label htmlFor={`w-${s.key}`}>{s.label}</label>
+                  <span>{weights[s.key]}%</span>
+                </div>
+                <input
+                  id={`w-${s.key}`}
+                  type="range"
+                  min={s.min}
+                  max={s.max}
+                  step={5}
+                  value={weights[s.key]}
+                  onChange={(e) => setWeights(w => ({ ...w, [s.key]: parseInt(e.target.value, 10) }))}
+                  style={{ width: '100%', accentColor: C.green, cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: '0.7rem', color: C.muted }}>{s.hint}</span>
               </div>
-              <input
-                type="range"
-                min="10"
-                max="50"
-                step="5"
-                value={simTheoryPct}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10);
-                  setSimTheoryPct(val);
-                  setSimSimTaskPct(100 - val - simLogbookPct - simJuryPct);
-                }}
-                style={{ width: '100%', accentColor: '#38bdf8', cursor: 'pointer' }}
-              />
-              <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Objective fundamental concepts test</span>
-            </div>
-
-            {/* Slider 2: Fault Simulation */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', fontWeight: 700, marginBottom: '4px' }}>
-                <span style={{ color: '#86efac' }}>2. Practical & VR Task Simulation:</span>
-                <span style={{ color: '#86efac' }}>{simSimTaskPct}%</span>
-              </div>
-              <input
-                type="range"
-                min="20"
-                max="50"
-                step="5"
-                value={simSimTaskPct}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10);
-                  setSimSimTaskPct(val);
-                  setSimTheoryPct(100 - val - simLogbookPct - simJuryPct);
-                }}
-                style={{ width: '100%', accentColor: '#22c55e', cursor: 'pointer' }}
-              />
-              <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Live fault diagnosis & machine toolpath execution</span>
-            </div>
-
-            {/* Slider 3: Digital Logbook */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', fontWeight: 700, marginBottom: '4px' }}>
-                <span style={{ color: '#fdba74' }}>3. Continuous Digital E-Logbook:</span>
-                <span style={{ color: '#fdba74' }}>{simLogbookPct}%</span>
-              </div>
-              <input
-                type="range"
-                min="15"
-                max="30"
-                step="5"
-                value={simLogbookPct}
-                onChange={(e) => setSimLogbookPct(parseInt(e.target.value, 10))}
-                style={{ width: '100%', accentColor: '#f97316', cursor: 'pointer' }}
-              />
-              <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Continuous semester-long practical job verification</span>
-            </div>
-
-            {/* Slider 4: Industry Jury */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', fontWeight: 700, marginBottom: '4px' }}>
-                <span style={{ color: '#f472b6' }}>4. Industry-Jury On-Job Evaluation:</span>
-                <span style={{ color: '#f472b6' }}>{simJuryPct}%</span>
-              </div>
-              <input
-                type="range"
-                min="10"
-                max="30"
-                step="5"
-                value={simJuryPct}
-                onChange={(e) => setSimJuryPct(parseInt(e.target.value, 10))}
-                style={{ width: '100%', accentColor: '#ec4899', cursor: 'pointer' }}
-              />
-              <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Plant manager evaluation of safety, 5S & SOPs</span>
-            </div>
+            ))}
           </div>
 
-          {/* Real-time Outcomes Display */}
-          <div style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          {/* Outcomes */}
+          <div style={{ background: '#fff', border: `1px solid ${C.border}`, borderRadius: 12, padding: 18, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: 700 }}>
-                Simulated Policy Impact
+              <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: C.muted, fontWeight: 700 }}>
+                Simulated Policy Impact (illustrative estimate)
               </div>
-              <h4 style={{ margin: '4px 0 14px 0', fontSize: '1.2rem', color: '#ffffff', fontWeight: 800 }}>
-                Total Evaluation: {totalWeight}% (Normalized)
+              <h4 style={{ margin: '4px 0 14px 0', fontSize: '1.2rem', fontWeight: 800, color: isValidTotal ? C.ink : C.orange }}>
+                Total Evaluation: {totalWeight}% {isValidTotal ? '✓' : '(adjust to reach 100%)'}
               </h4>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '10px 14px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.74rem', color: '#86efac', fontWeight: 700 }}>Employer Confidence Index</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#4ade80' }}>{employerConfidence} / 100</div>
-                  <div style={{ fontSize: '0.68rem', color: '#cbd5e1' }}>Direct reflection of practical job-readiness</div>
-                </div>
-
-                <div style={{ background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '10px 14px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.74rem', color: '#93c5fd', fontWeight: 700 }}>Rote-Memorization Elimination</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#38bdf8' }}>{roteReductionPct}% Reduction</div>
-                  <div style={{ fontSize: '0.68rem', color: '#cbd5e1' }}>Drastic reduction in cheating & paper memorization</div>
-                </div>
-
-                <div style={{ background: 'rgba(249, 115, 22, 0.15)', border: '1px solid rgba(249, 115, 22, 0.3)', padding: '10px 14px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.74rem', color: '#fdba74', fontWeight: 700 }}>First-Month Productivity Gain</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#fb923c' }}>+{productivityGain}%</div>
-                  <div style={{ fontSize: '0.68rem', color: '#cbd5e1' }}>Shorter apprentice ramp-up period at OEM factories</div>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <Metric label="Employer Confidence Index" value={`${impact.confidence} / 100`} color={C.green}
+                        note="Reflects weight given to practical job-readiness" />
+                <Metric label="Rote-Memorization Reduction" value={`${impact.roteReduction}%`}
+                        note="Less paper memorization and cheating risk" />
+                <Metric label="First-Month Productivity Gain" value={`+${impact.productivity}%`} color={C.orange}
+                        note="Shorter apprentice ramp-up at OEM factories" />
               </div>
+              <p style={{ fontSize: '0.7rem', color: C.muted, margin: '10px 0 0 0' }}>
+                Model uses assumed coefficients. Calibrate with placement and employer-survey data before policy use.
+              </p>
             </div>
 
             <button
               type="button"
-              onClick={handleGenerateCircular}
+              onClick={generateCircular}
+              disabled={!isValidTotal}
               style={{
-                marginTop: '16px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '10px 16px',
-                fontWeight: 800,
-                fontSize: '0.86rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)'
+                marginTop: 16, background: isValidTotal ? C.green : '#94a3b8', color: '#fff', border: 'none',
+                borderRadius: 8, padding: '10px 16px', fontWeight: 800, fontSize: '0.86rem',
+                cursor: isValidTotal ? 'pointer' : 'not-allowed',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
               }}
             >
               <FileText size={16} />
-              <span>{lang === 'mr' ? 'मूल्यांकन सुधारणा शासन परिपत्रक तयार करा' : 'Generate State Assessment Reform Circular'}</span>
+              <span>{text(lang, 'Generate Draft Reform Circular', 'मूल्यांकन सुधारणा मसुदा परिपत्रक तयार करा', 'मूल्यांकन सुधार मसौदा परिपत्र तैयार करें')}</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* ================= OFFICIAL CIRCULAR MODAL ================= */}
-      {activeCircularModal && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(15, 23, 42, 0.8)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: '20px'
-          }}
-          onClick={() => setActiveCircularModal(null)}
+      {/* ================= DRAFT CIRCULAR MODAL ================= */}
+      {circular && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 20 }}
+          onClick={() => setCircular(null)}
         >
-          <div 
-            style={{
-              background: '#ffffff',
-              borderRadius: '14px',
-              maxWidth: '680px',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.3)',
-              border: '1px solid #cbd5e1'
-            }}
+          <div
+            style={{ background: '#fff', borderRadius: 14, maxWidth: 680, width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.3)', border: '1px solid #cbd5e1' }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div style={{ background: '#0b192c', color: '#ffffff', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: '#1e293b', color: '#fff', padding: '18px 24px', ...flexRow }}>
               <div>
-                <div style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                  Government of Maharashtra · Directorate of Vocational Education & Training (DVET)
+                <div style={{ fontSize: '0.72rem', color: '#fdba74', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  Government of Maharashtra · DVET · Draft for Approval
                 </div>
-                <h3 style={{ margin: '2px 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
-                  State Vocational Examination Reform Circular
+                <h3 style={{ margin: '2px 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#fff' }}>
+                  State Vocational Examination Reform Circular (Draft)
                 </h3>
               </div>
-              <button
-                type="button"
-                onClick={() => setActiveCircularModal(null)}
-                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#ffffff', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
+              <button type="button" onClick={() => setCircular(null)} aria-label="Close"
+                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer' }}>
                 ✕
               </button>
             </div>
 
-            {/* Circular Body */}
-            <div style={{ padding: '24px', fontSize: '0.86rem', color: '#1e293b', lineHeight: 1.6 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '16px', fontSize: '0.78rem', color: '#64748b' }}>
-                <div><strong>Circular No:</strong> {activeCircularModal.circularNo}</div>
-                <div><strong>Date of Issue:</strong> {activeCircularModal.date}</div>
+            <div style={{ padding: 24, fontSize: '0.86rem', color: '#1e293b', lineHeight: 1.6 }}>
+              <div style={{ ...flexRow, borderBottom: `1px solid ${C.border}`, paddingBottom: 12, marginBottom: 16, fontSize: '0.78rem', color: C.muted }}>
+                <div><strong>Draft Ref:</strong> {circular.no}</div>
+                <div><strong>Date:</strong> {circular.date}</div>
               </div>
 
-              <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
-                <div><strong>Subject:</strong> Mandatory transition from written pen-paper examination to 4-Tier Practical Task Simulation and Industry-Jury Evaluation for <strong>{activeCircularModal.trade} ({activeCircularModal.nsqfLevel})</strong> across Maharashtra ITIs.</div>
+              <div style={{ background: C.soft, padding: '12px 16px', borderRadius: 8, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+                <strong>Subject:</strong> Proposed transition from written pen-paper examination to 4-Tier Practical Task Simulation and Industry-Jury Evaluation for <strong>{circular.trade} ({circular.level})</strong> across Maharashtra ITIs.
               </div>
 
               <p style={{ margin: '0 0 12px 0' }}>
-                In alignment with National Skills Qualification Framework (NSQF) reforms and Maharashtra Industry 4.0 mandates, the evaluation rubric is hereby restructured into the following mandatory four-tier breakdown:
+                In line with NSQF reforms, the evaluation rubric is proposed to be restructured into the following four-tier breakdown:
               </p>
 
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px', fontSize: '0.82rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontSize: '0.82rem' }}>
                 <thead>
                   <tr style={{ background: '#f1f5f9', textAlign: 'left' }}>
-                    <th style={{ padding: '8px' }}>Evaluation Component</th>
-                    <th style={{ padding: '8px' }}>Weightage</th>
-                    <th style={{ padding: '8px' }}>Assessment Methodology</th>
+                    <th style={{ padding: 8 }}>Evaluation Component</th>
+                    <th style={{ padding: 8 }}>Weightage</th>
+                    <th style={{ padding: 8 }}>Assessment Methodology</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '8px', fontWeight: 700 }}>Continuous Digital E-Logbook</td>
-                    <td style={{ padding: '8px', color: '#ea580c', fontWeight: 800 }}>{activeCircularModal.logbookPct}</td>
-                    <td style={{ padding: '8px', color: '#64748b' }}>Biometrically verified practical job completions</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '8px', fontWeight: 700 }}>VR / Digital Fault Simulation</td>
-                    <td style={{ padding: '8px', color: '#059669', fontWeight: 800 }}>{activeCircularModal.simulationPct}</td>
-                    <td style={{ padding: '8px', color: '#64748b' }}>Timed diagnostic error tracing under dynamic load</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '8px', fontWeight: 700 }}>Industry-Jury On-Job Assessment</td>
-                    <td style={{ padding: '8px', color: '#0284c7', fontWeight: 800 }}>{activeCircularModal.juryPct}</td>
-                    <td style={{ padding: '8px', color: '#64748b' }}>Evaluation by OEM plant managers ({activeCircularModal.endorsement.split('&')[0]})</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '8px', fontWeight: 700 }}>CBT Core Theory</td>
-                    <td style={{ padding: '8px', color: '#64748b', fontWeight: 800 }}>{activeCircularModal.theoryPct}</td>
-                    <td style={{ padding: '8px', color: '#64748b' }}>Objective computer-based fundamental test</td>
-                  </tr>
+                  {buildCircularRows(circular).map(([name, pct, method]) => (
+                    <tr key={name} style={{ borderBottom: `1px solid ${C.border}` }}>
+                      <td style={{ padding: 8, fontWeight: 700 }}>{name}</td>
+                      <td style={{ padding: 8, fontWeight: 800, color: C.ink }}>{pct}</td>
+                      <td style={{ padding: 8, color: C.muted }}>{method}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
 
-              <div style={{ background: '#ecfdf5', padding: '10px 14px', borderRadius: '8px', border: '1px solid #a7f3d0', fontSize: '0.78rem', color: '#065f46', marginBottom: '16px' }}>
-                ✓ Expected Impact: <strong>{activeCircularModal.confidence} Employer Confidence</strong> · <strong>{activeCircularModal.productivity} Productivity Acceleration</strong>
+              <div style={{ background: C.greenBg, padding: '10px 14px', borderRadius: 8, border: `1px solid ${C.greenLine}`, fontSize: '0.78rem', color: '#166534', marginBottom: 8 }}>
+                Illustrative estimate: <strong>{circular.impact.confidence}/100 Employer Confidence</strong> · <strong>+{circular.impact.productivity}% Productivity</strong>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: circular.validated ? C.green : C.orange, fontWeight: 700 }}>
+                Employer validation: {circular.validated ? 'Recorded' : 'Pending'}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
-                  Approved by State Board of Vocational Examination,<br />
+              <div style={{ ...flexRow, marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.border}`, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: '0.74rem', color: C.muted }}>
+                  Pending approval by State Board of Vocational Examination,<br />
                   <strong>Director, Vocational Education & Training, Maharashtra</strong>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-sm"
-                    onClick={() => setActiveCircularModal(null)}
-                  >
-                    Close
-                  </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => setCircular(null)}>Close</button>
                   <button
                     type="button"
                     className="btn btn-primary btn-sm"
                     onClick={() => {
-                      showToast(`Official State Circular ${activeCircularModal.circularNo} downloaded as PDF!`);
-                      setActiveCircularModal(null);
+                      downloadCircularDraft(circular);
+                      showToast(`Draft ${circular.no} downloaded.`);
+                      setCircular(null);
                     }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 800 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontWeight: 800 }}
                   >
                     <Download size={14} />
-                    <span>Download Official PDF</span>
+                    <span>Download Draft</span>
                   </button>
                 </div>
               </div>
